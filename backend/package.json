@@ -2,6 +2,7 @@
   "name": "ai_journal",
   "version": "1.0.0",
   "description": "A AI Journal Project",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
