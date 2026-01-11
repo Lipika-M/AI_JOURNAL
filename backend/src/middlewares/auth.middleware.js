@@ -21,3 +21,4 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
     throw new ApiError("UNAUTHORIZED ACCESS", 401);
   }
 });
+ 
