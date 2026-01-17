@@ -25,5 +25,29 @@ const createJournal = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, "Journal created successfully", journal));
 });
+const updateJournal = asyncHandler(async (req, res) => {
+  const journalId = req.params.id;
+  if (!journalId) {
+    throw new ApiError(400, "No Journal found");
+  }
+  const { title, content, tags } = req.body;
 
-export { createJournal };
+  const updateFields = {};
+  if (title) updateFields.title = title.trim();
+  if (content) updateFields.content = content.trim();
+  if (Array.isArray(tags)) {
+    updateFields.tags = tags.map((tag) => tag.trim().toLowerCase());
+  }
+  const updatedJournal = await Journal.findOneAndUpdate(
+    { _id: journalId, owner: req.user._id ,isDeleted: false },
+    updateFields,
+    { new: true, runValidators: true }
+  );
+  if (!updatedJournal) {
+    throw new ApiError(404, "Journal not found or you are not authorized to update it");
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Journal updated successfully", updatedJournal));
+});
+export { createJournal, updateJournal };
