@@ -16,6 +16,8 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 import userRouter from "./routers/user.routes.js"
+import journalRouter from "./routers/journal.router.js"
 
 app.use('/api/v1/users', userRouter)
+app.use('/api/v1/journals', journalRouter)
 export { app }
