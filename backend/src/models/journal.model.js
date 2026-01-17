@@ -45,3 +45,4 @@ const journalSchema = new Schema(
   },
   { timestamps: true }
 );
+export const Journal=mongoose.model("Journal", journalSchema);
