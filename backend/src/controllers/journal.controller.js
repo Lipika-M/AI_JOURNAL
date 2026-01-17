@@ -25,6 +25,7 @@ const createJournal = asyncHandler(async (req, res) => {
     .status(201)
     .json(new ApiResponse(201, "Journal created successfully", journal));
 });
+
 const updateJournal = asyncHandler(async (req, res) => {
   const journalId = req.params.id;
   if (!journalId) {
@@ -39,15 +40,76 @@ const updateJournal = asyncHandler(async (req, res) => {
     updateFields.tags = tags.map((tag) => tag.trim().toLowerCase());
   }
   const updatedJournal = await Journal.findOneAndUpdate(
-    { _id: journalId, owner: req.user._id ,isDeleted: false },
+    { _id: journalId, owner: req.user._id, isDeleted: false },
     updateFields,
     { new: true, runValidators: true }
   );
   if (!updatedJournal) {
-    throw new ApiError(404, "Journal not found or you are not authorized to update it");
+    throw new ApiError(
+      404,
+      "Journal not found or you are not authorized to update it"
+    );
   }
   res
     .status(200)
     .json(new ApiResponse(200, "Journal updated successfully", updatedJournal));
 });
-export { createJournal, updateJournal };
+
+const getAllJournals = asyncHandler(async (req, res) => {
+  const journals = (
+    await Journal.find({ owner: req.user._id, isDeleted: false })
+  ).sort({ createdAt: -1 });
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Journals retrieved successfully", journals));
+});
+
+const getJournalById = asyncHandler(async (req, res) => {
+  const journalId = req.params.id;
+
+  if (!journalId) {
+    throw new ApiError(400, "Journal ID is required");
+  }
+  if (!mongoose.Types.ObjectId.isValid(journalId)) {
+    throw new ApiError(400, "Invalid journal ID");
+  }
+
+  const journal = await Journal.findOne({
+    _id: journalId,
+    owner: req.user._id,
+    isDeleted: false,
+  });
+  if (!journal) {
+    throw new ApiError(
+      404,
+      "Journal not found or you are not authorized to view it"
+    );
+  }
+  res
+    .status(200)
+    .json(new ApiResponse(200, "Journal retrieved successfully", journal));
+});
+
+const deleteJournal = asyncHandler(async (req, res) => {
+ const journalId=req.params.id;
+ if(!journalId) {
+    throw new ApiError(400, "Journal ID is required");
+  }
+  if (!mongoose.Types.ObjectId.isValid(journalId)) {
+    throw new ApiError(400, "Invalid journal ID");
+  }
+  const deletedJournal = await Journal.findOneAndUpdate(
+  { _id: journalId, owner: req.user._id, isDeleted: false },
+  { isDeleted: true },
+  { new: true }
+);
+
+if (!deletedJournal) {
+  throw new ApiError(404, "Journal not found or unauthorized");
+}
+res
+  .status(200)
+  .json(new ApiResponse(200, "Journal deleted successfully"));
+});
+
+export { createJournal, updateJournal, getAllJournals, getJournalById, deleteJournal };
