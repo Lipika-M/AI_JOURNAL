@@ -2,7 +2,7 @@ import mongoose, { Schema } from "mongoose";
 const journalSchema = new Schema(
   {
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },

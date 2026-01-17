@@ -2,7 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Journal } from "../models/journal.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-
+import mongoose, { Schema } from "mongoose";
 const createJournal = asyncHandler(async (req, res) => {
   const { title, content, tags } = req.body;
   if (!title || title.trim() === "") {
@@ -56,9 +56,8 @@ const updateJournal = asyncHandler(async (req, res) => {
 });
 
 const getAllJournals = asyncHandler(async (req, res) => {
-  const journals = (
-    await Journal.find({ owner: req.user._id, isDeleted: false })
-  ).sort({ createdAt: -1 });
+  const journals = await Journal.find({ owner: req.user._id, isDeleted: false })
+    .sort({ createdAt: -1 });
   res
     .status(200)
     .json(new ApiResponse(200, "Journals retrieved successfully", journals));
@@ -70,7 +69,7 @@ const getJournalById = asyncHandler(async (req, res) => {
   if (!journalId) {
     throw new ApiError(400, "Journal ID is required");
   }
-  if (!mongoose.Types.ObjectId.isValid(journalId)) {
+  if (!mongoose.Types.ObjectId.isValid(new mongoose.Types.ObjectId(journalId))) {
     throw new ApiError(400, "Invalid journal ID");
   }
 
@@ -95,7 +94,7 @@ const deleteJournal = asyncHandler(async (req, res) => {
  if(!journalId) {
     throw new ApiError(400, "Journal ID is required");
   }
-  if (!mongoose.Types.ObjectId.isValid(journalId)) {
+  if (!mongoose.Types.ObjectId.isValid(new mongoose.Types.ObjectId(journalId))) {
     throw new ApiError(400, "Invalid journal ID");
   }
   const deletedJournal = await Journal.findOneAndUpdate(
