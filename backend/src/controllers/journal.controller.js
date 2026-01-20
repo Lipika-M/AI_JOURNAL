@@ -22,17 +22,22 @@ const createJournal = asyncHandler(async (req, res) => {
     content: content.trim(),
     tags: normalizedTags,
   });
+  console.log("AI SERVICE CALLED");
+
   try {
-  const aiResult = await analyzeJournal(journal.content);
+    console.log("AI SERVICE CALLED");
 
-  journal.sentiment = aiResult.sentiment;
-  journal.moodScore = aiResult.moodScore;
-  journal.summary = aiResult.summary;
+    const aiResult = await analyzeJournal(journal.content);
 
-  await journal.save({ validateBeforeSave: false });
-} catch (error) {
-  console.error("AI failed:", error.message);
-}
+    journal.sentiment = aiResult.sentiment;
+    journal.moodScore = aiResult.moodScore;
+    journal.summary = aiResult.summary;
+
+    await journal.save({ validateBeforeSave: false });
+  } catch (error) {
+    console.error("AI Analysis Error:", error.message);
+    console.error("Full Error:", error);
+  }
   res
     .status(201)
     .json(new ApiResponse(201, "Journal created successfully", journal));
