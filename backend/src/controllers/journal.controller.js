@@ -3,6 +3,7 @@ import { Journal } from "../models/journal.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { Schema } from "mongoose";
+import { analyzeJournal } from "../services/ai.service.js";
 const createJournal = asyncHandler(async (req, res) => {
   const { title, content, tags } = req.body;
   if (!title || title.trim() === "") {
@@ -21,6 +22,17 @@ const createJournal = asyncHandler(async (req, res) => {
     content: content.trim(),
     tags: normalizedTags,
   });
+  try {
+  const aiResult = await analyzeJournal(journal.content);
+
+  journal.sentiment = aiResult.sentiment;
+  journal.moodScore = aiResult.moodScore;
+  journal.summary = aiResult.summary;
+
+  await journal.save({ validateBeforeSave: false });
+} catch (error) {
+  console.error("AI failed:", error.message);
+}
   res
     .status(201)
     .json(new ApiResponse(201, "Journal created successfully", journal));
