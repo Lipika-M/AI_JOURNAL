@@ -5,6 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { Schema } from "mongoose";
 import { analyzeJournal } from "../services/ai.service.js";
 const createJournal = asyncHandler(async (req, res) => {
+      console.log("AI SERVICE  ");
   const { title, content, tags } = req.body;
   if (!title || title.trim() === "") {
     throw new ApiError(400, "Title is required");
@@ -12,9 +13,12 @@ const createJournal = asyncHandler(async (req, res) => {
   if (!content || content.trim() === "") {
     throw new ApiError(400, "Content is required");
   }
+    console.log("AI SERVICE CALLED1");
+
   const normalizedTags = Array.isArray(tags)
     ? tags.map((tag) => tag.trim().toLowerCase())
     : [];
+  console.log("AI SERVICE CALLED2");
 
   const journal = await Journal.create({
     owner: req.user._id,
@@ -22,10 +26,10 @@ const createJournal = asyncHandler(async (req, res) => {
     content: content.trim(),
     tags: normalizedTags,
   });
-  console.log("AI SERVICE CALLED");
+  console.log("AI SERVICE CALLED3");
 
   try {
-    console.log("AI SERVICE CALLED");
+    console.log("AI SERVICE CALLED4");
 
     const aiResult = await analyzeJournal(journal.content);
 
