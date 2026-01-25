@@ -1,10 +1,17 @@
-// auth.api.ts
-import api from "./axios.ts"; // your centralized Axios instance
-import type{ User } from "../types/user.ts";
+import api from "./axios";
+import type{ User } from "../types/user.type";
+import type{ ApiResponse } from "../types/apiResponse.type";
 
-type AuthResponse = User;
-type MessageResponse = { message: string };
-type AccessTokenResponse = { accessToken: string };
+type AuthResponse = ApiResponse<User>;
+type MessageResponse = ApiResponse<null>;
+type RefreshResponse = ApiResponse<{
+  accessToken: string;
+  refreshToken: string;
+}>;
+type loginPayload =
+  | { email: string; password: string }
+  | { userName: string; password: string };
+
 
 const authApi = {
   registerUser: async (data: {
@@ -13,51 +20,43 @@ const authApi = {
     email: string;
     userName: string;
   }): Promise<AuthResponse> => {
-    const res = await api.post<AuthResponse>("/register", data);
+    const res = await api.post<AuthResponse>("/users/register", data);
     return res.data;
   },
 
-   loginUser: async (data: {
-    password: string;
-    email?: string;
-    userName?: string;
-  }): Promise<AuthResponse> => {
-    const res = await api.post<AuthResponse>("/login", data);
+  loginUser: async (data: loginPayload): Promise<AuthResponse> => {
+    const res = await api.post<AuthResponse>("/users/login", data);
     return res.data;
   },
 
-   logoutUser: async (): Promise<MessageResponse> => {
-    const res = await api.post("/logout");
+  logoutUser: async (): Promise<MessageResponse> => {
+    const res = await api.post<MessageResponse>("/users/logout");
     return res.data;
   },
 
-  // Refresh access token
-  refreshAccessToken: async (): Promise<AccessTokenResponse> => {
-    const res = await api.get("/refresh-token");
+  refreshAccessToken: async (): Promise<RefreshResponse> => {
+    const res = await api.post<RefreshResponse>("/users/refresh-token");
     return res.data;
   },
 
-  // Get current logged-in user
   getCurrentUser: async (): Promise<AuthResponse> => {
-    const res = await api.get<AuthResponse>("/me");
+    const res = await api.get<AuthResponse>("/users/me");
     return res.data;
   },
 
-  // Update current password
   updateCurrentPassword: async (data: {
     currentPassword: string;
     newPassword: string;
   }): Promise<MessageResponse> => {
-    const res = await api.patch("/update-password", data);
+    const res = await api.patch<MessageResponse>("/users/change-password", data);
     return res.data;
   },
 
-  // Update account details
   updateAccountDetails: async (data: {
     fullName?: string;
     email?: string;
   }): Promise<AuthResponse> => {
-    const res = await api.patch<AuthResponse>("/update-details", data);
+    const res = await api.patch<AuthResponse>("/users/update-account", data);
     return res.data;
   },
 };
