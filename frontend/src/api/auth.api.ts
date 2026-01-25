@@ -45,7 +45,7 @@ const authApi = {
   },
 
   updateCurrentPassword: async (data: {
-    currentPassword: string;
+    oldPassword: string;
     newPassword: string;
   }): Promise<MessageResponse> => {
     const res = await api.patch<MessageResponse>("/users/change-password", data);
