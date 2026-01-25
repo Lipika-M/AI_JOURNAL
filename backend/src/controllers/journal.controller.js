@@ -5,7 +5,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { Schema } from "mongoose";
 import { analyzeJournal } from "../services/ai.service.js";
 const createJournal = asyncHandler(async (req, res) => {
-       
   const { title, content, tags } = req.body;
   if (!title || title.trim() === "") {
     throw new ApiError(400, "Title is required");
@@ -13,12 +12,10 @@ const createJournal = asyncHandler(async (req, res) => {
   if (!content || content.trim() === "") {
     throw new ApiError(400, "Content is required");
   }
-     
 
   const normalizedTags = Array.isArray(tags)
     ? tags.map((tag) => tag.trim().toLowerCase())
     : [];
-  
 
   const journal = await Journal.create({
     owner: req.user._id,
@@ -26,11 +23,8 @@ const createJournal = asyncHandler(async (req, res) => {
     content: content.trim(),
     tags: normalizedTags,
   });
-   
 
   try {
-    
-
     const aiResult = await analyzeJournal(journal.content);
 
     journal.sentiment = aiResult.sentiment;
@@ -77,8 +71,10 @@ const updateJournal = asyncHandler(async (req, res) => {
 });
 
 const getAllJournals = asyncHandler(async (req, res) => {
-  const journals = await Journal.find({ owner: req.user._id, isDeleted: false })
-    .sort({ createdAt: -1 });
+  const journals = await Journal.find({
+    owner: req.user._id,
+    isDeleted: false,
+  }).sort({ createdAt: -1 });
   res
     .status(200)
     .json(new ApiResponse(200, "Journals retrieved successfully", journals));
@@ -90,7 +86,9 @@ const getJournalById = asyncHandler(async (req, res) => {
   if (!journalId) {
     throw new ApiError(400, "Journal ID is required");
   }
-  if (!mongoose.Types.ObjectId.isValid(new mongoose.Types.ObjectId(journalId))) {
+  if (
+    !mongoose.Types.ObjectId.isValid(new mongoose.Types.ObjectId(journalId))
+  ) {
     throw new ApiError(400, "Invalid journal ID");
   }
 
@@ -111,25 +109,31 @@ const getJournalById = asyncHandler(async (req, res) => {
 });
 
 const deleteJournal = asyncHandler(async (req, res) => {
- const journalId=req.params.id;
- if(!journalId) {
+  const journalId = req.params.id;
+  if (!journalId) {
     throw new ApiError(400, "Journal ID is required");
   }
-  if (!mongoose.Types.ObjectId.isValid(new mongoose.Types.ObjectId(journalId))) {
+  if (
+    !mongoose.Types.ObjectId.isValid(new mongoose.Types.ObjectId(journalId))
+  ) {
     throw new ApiError(400, "Invalid journal ID");
   }
   const deletedJournal = await Journal.findOneAndUpdate(
-  { _id: journalId, owner: req.user._id, isDeleted: false },
-  { isDeleted: true },
-  { new: true }
-);
+    { _id: journalId, owner: req.user._id, isDeleted: false },
+    { isDeleted: true },
+    { new: true }
+  );
 
-if (!deletedJournal) {
-  throw new ApiError(404, "Journal not found or unauthorized");
-}
-res
-  .status(200)
-  .json(new ApiResponse(200, "Journal deleted successfully"));
+  if (!deletedJournal) {
+    throw new ApiError(404, "Journal not found or unauthorized");
+  }
+  res.status(200).json(new ApiResponse(200, "Journal deleted successfully"));
 });
 
-export { createJournal, updateJournal, getAllJournals, getJournalById, deleteJournal };
+export {
+  createJournal,
+  updateJournal,
+  getAllJournals,
+  getJournalById,
+  deleteJournal,
+};
