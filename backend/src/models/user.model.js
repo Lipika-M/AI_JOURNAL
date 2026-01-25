@@ -36,7 +36,16 @@ const userSchema = new Schema(
       required: [true, "Password is required"],
     },
   },
-  { timestamps: true }
+  { timestamps: true,
+    toJSON:{
+      transform(doc, ret) {
+        delete ret.password;
+        delete ret.refreshToken;
+        delete ret.__v;
+        return ret;
+      }
+    }
+   }
 );
 
 userSchema.pre("save", async function () {
