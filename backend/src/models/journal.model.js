@@ -43,6 +43,13 @@ const journalSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true,
+    toJSON:{
+      transform(doc, ret) {
+        delete ret.__v;
+        return ret;
+      }
+    }
+   }
 );
 export const Journal=mongoose.model("Journal", journalSchema);
