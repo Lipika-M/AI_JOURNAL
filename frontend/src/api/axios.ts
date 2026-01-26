@@ -29,14 +29,16 @@ api.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryRequestConfig;
 
+    console.log("Response error - Status:", error.response?.status, "URL:", originalRequest.url);
+
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/login") &&
       !originalRequest.url?.includes("/register") &&
-      !originalRequest.url?.includes("/refresh-token")&&
-      !originalRequest.url?.includes("/me")
+      !originalRequest.url?.includes("/refresh-token")
     ) {
+      console.log("Attempting to refresh token...");
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -47,10 +49,12 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await api.post("/users/refresh-token");
+        const refreshResponse = await api.post("/users/refresh-token");
+        console.log("Token refresh successful:", refreshResponse);
         processQueue(null);
         return api(originalRequest);
       } catch (err) {
+        console.log("Token refresh failed:", err);
         processQueue(err as Error);
         return Promise.reject(err);
       } finally {

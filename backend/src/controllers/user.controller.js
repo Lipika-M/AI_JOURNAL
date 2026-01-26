@@ -43,7 +43,7 @@ const registerUser = asyncHandler(async (req, res) => {
   );
   return res
     .status(201)
-    .json(new ApiResponse("User registered successfully", createdUser));
+    .json(new ApiResponse(201, "User registered successfully", createdUser));
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -76,7 +76,8 @@ const loginUser = asyncHandler(async (req, res) => {
   }
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   };
   return res
     .status(200)
@@ -102,7 +103,8 @@ const logoutUser = asyncHandler(async (req, res) => {
   }
   const options = {
     httpOnly: true,
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
   };
   res
     .status(200)
@@ -136,7 +138,8 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
       await generateAccessAndRefreshTokens(user._id);
     const options = {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
     };
     return res
       .status(200)
@@ -158,7 +161,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const getCurrentUser = asyncHandler(async (req, res) => {
   res
     .status(200)
-    .json(new ApiResponse("Current user fetched successfully", req.user));
+    .json(new ApiResponse(200, "Current user fetched successfully", req.user));
 });
 
 const updateCurrentPassword = asyncHandler(async (req, res) => {
