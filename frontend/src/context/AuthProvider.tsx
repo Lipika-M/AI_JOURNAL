@@ -1,34 +1,28 @@
 import { useState, useEffect, type ReactNode } from "react";
 import authApi from "../api/auth.api";
 import type { User } from "../types/user.type";
-import { AuthContext, type AuthContextType } from "./authContext";
+import { AuthContext } from "./authContext";
+import type { AuthContextType } from "../types/auth.type";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  console.log("AuthProvider mounted !!");
-
+ 
   const [user, setUser] = useState<User | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Check if user is already logged in on mount
-  useEffect(() => {
+   useEffect(() => {
     const checkAuth = async () => {
-      console.log("Checking authentication on mount...");
-      try {
+       try {
         const response = await authApi.getCurrentUser();
-        console.log("getCurrentUser response:", response);
-        if (response.success && response.data) {
-          console.log("User found, setting authenticated state");
-          setUser(response.data);
+         if (response.success && response.data) {
+           setUser(response.data);
           setIsAuthenticated(true);
         } else {
-          console.log("getCurrentUser not successful");
-          setUser(null);
+           setUser(null);
           setIsAuthenticated(false);
         }
       } catch (err) {
-        // 401 means user not authenticated - this is expected
         console.log("Error checking auth:", err);
         setUser(null);
         setIsAuthenticated(false);
