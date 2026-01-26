@@ -1,6 +1,6 @@
 import api from "./axios";
-import type{ User } from "../types/user.type";
-import type{ ApiResponse } from "../types/apiResponse.type";
+import type{ User } from "../types/user.type.ts";
+import type{ ApiResponse } from "../types/apiResponse.type.ts";
 
 type AuthResponse = ApiResponse<User>;
 type MessageResponse = ApiResponse<null>;

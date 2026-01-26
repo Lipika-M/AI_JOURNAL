@@ -35,7 +35,7 @@ api.interceptors.response.use(
       !originalRequest.url?.includes("/login") &&
       !originalRequest.url?.includes("/register") &&
       !originalRequest.url?.includes("/refresh-token")&&
-      !originalRequest.url?.includes("/users/me")
+      !originalRequest.url?.includes("/me")
     ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {

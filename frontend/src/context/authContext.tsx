@@ -1,9 +1,9 @@
-import { createContext, useContext, useState, useEffect,} from "react";
+import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import authApi from "../api/auth.api";
 import type { User } from "../types/user.type";
 
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
@@ -24,7 +24,7 @@ interface AuthContextType {
   clearError: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -40,9 +40,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         if (response.success && response.data) {
           setUser(response.data);
           setIsAuthenticated(true);
+        } else {
+          setUser(null);
+          setIsAuthenticated(false);
         }
       } catch (err) {
-        console.error("Auth check failed:", err);
+        // 401 means user not authenticated - this is expected
+        console.log("User not authenticated");
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -159,12 +163,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   return (
     <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
   );
-};
-
-export const useAuth = (): AuthContextType => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
 };
