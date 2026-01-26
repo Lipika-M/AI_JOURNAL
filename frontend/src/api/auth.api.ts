@@ -8,9 +8,11 @@ type RefreshResponse = ApiResponse<{
   accessToken: string;
   refreshToken: string;
 }>;
-type loginPayload =
-  | { email: string; password: string }
-  | { userName: string; password: string };
+type loginPayload = {
+  email?: string;
+  userName?: string;
+  password: string;
+};
 
 
 const authApi = {
