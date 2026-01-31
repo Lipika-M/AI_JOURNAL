@@ -25,9 +25,9 @@ const journalSchema = new Schema(
     },
     moodScore: {
       type: Number,
-      min: -1,
-      max: 1,
-      default: 0,
+      min: 0,
+      max: 10,
+      default: 5,
     },
     summary: {
       type: String,
