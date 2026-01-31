@@ -4,7 +4,7 @@ import PublicRoute from "./routes/publicRoute";
 import Login from "./pages/login";
 import Register from "./pages/register";
 import Dashboard from "./pages/dashboard";
-import NewJournal from "./pages/newJournal";
+import JournalDetail from "./pages/journalDetail";
 import NotFound from "./pages/notFound";
 
 function App() {
@@ -17,7 +17,7 @@ function App() {
 
       <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/journals" element={<NewJournal />} />
+        <Route path="/journals/:id" element={<JournalDetail />} />
       </Route>
 
       <Route path="*" element={<NotFound />} />
