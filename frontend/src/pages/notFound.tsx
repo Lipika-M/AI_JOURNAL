@@ -14,13 +14,13 @@ const NotFound = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100 px-4">
       <div className="w-full max-w-md text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
           <div className="inline-block">
             <svg
-              className="w-32 h-32 text-blue-400 mx-auto"
+              className="w-32 h-32 text-stone-400 mx-auto"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -36,10 +36,10 @@ const NotFound = () => {
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-8 border border-stone-200">
           {/* 404 Text */}
-          <h1 className="text-6xl font-bold text-gray-900 mb-2">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+          <h1 className="text-6xl font-bold text-gray-800 mb-2">404</h1>
+          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
             Page Not Found
           </h2>
 
@@ -53,13 +53,13 @@ const NotFound = () => {
           <div className="space-y-3">
             <button
               onClick={handleGoHome}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition"
+              className="w-full py-3 px-4 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
             >
               {isAuthenticated ? 'Go to Dashboard' : 'Go to Login'}
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="w-full py-3 px-4 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition"
+              className="w-full py-3 px-4 border border-stone-300 text-gray-700 font-medium rounded-full hover:bg-stone-50 transition-all duration-300"
             >
               Go Back
             </button>

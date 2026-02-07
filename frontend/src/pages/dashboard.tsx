@@ -13,8 +13,9 @@ import JournalEditorModal from "../components/journalEditorModal";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const [journals, setJournals] = useState<Journal[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
@@ -165,22 +166,24 @@ const Dashboard = () => {
     .sort((a, b) => b.averageMood - a.averageMood)
     .slice(0, 5);
 
+  const filteredJournals = journals.filter((journal) =>
+    journal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    journal.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm border-b">
+      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-stone-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">AI Journal</h1>
+              <h1 className="text-2xl font-serif text-gray-800">Solace</h1>
             </div>
             <div className="flex items-center gap-4">
-              <span className="text-gray-700">
-                Welcome, <span className="font-medium">{user?.fullName}</span>
-              </span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-2 text-sm text-gray-700 hover:text-gray-900 font-medium"
+                className="px-8 py-2.5 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 Logout
               </button>
@@ -193,32 +196,52 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h2 className="text-3xl font-bold text-gray-900">Your Journals</h2>
-              <p className="mt-2 text-gray-600">
-                {journals.length} {journals.length === 1 ? "entry" : "entries"} total
-              </p>
+          <div className="flex flex-col items-center mb-6">
+            <div className="bg-gray-800 text-white px-64 py-4 rounded-full mb-6 shadow-md">
+              <h2 className="text-2xl font-serif text-center italic">Your Journals</h2>
             </div>
-            <button
-              onClick={() => setShowEditorModal(true)}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-2"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 4v16m8-8H4"
-                />
-              </svg>
-              New Journal
-            </button>
+            
+            <div className="flex items-center gap-8 mb-6 w-full max-w-2xl">
+              <div className="flex-1">
+                <div className="flex items-center">
+                  <p className="text-sm text-gray-700">
+                    Total entries <span className="font-semibold">{journals.length.toString().padStart(2, '0')}</span>
+                  </p>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Your mood patterns at a glance</p>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1 min-w-[300px]">
+                  <svg
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  />
+                </div>
+                <button
+                  onClick={() => setShowEditorModal(true)}
+                  className="px-8 py-2.5 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg whitespace-nowrap"
+                >
+                  + New Journal
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -258,21 +281,14 @@ const Dashboard = () => {
 
         {/* Analytics Section */}
         <section className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Analytics</h2>
-              <p className="text-sm text-gray-600">Your mood patterns at a glance</p>
-            </div>
-          </div>
-
           {isAnalyticsLoading ? (
-            <div className="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-6 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-stone-600"></div>
             </div>
           ) : (
             <div className="grid gap-6 lg:grid-cols-2">
               {/* Mood Trends */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-6 border border-stone-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Mood Trends</h3>
                   <span className="text-xs text-gray-500">Last entries</span>
@@ -314,7 +330,7 @@ const Dashboard = () => {
               </div>
 
               {/* Sentiment Distribution */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-6 border border-stone-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Sentiment Split</h3>
                   <span className="text-xs text-gray-500">Share of entries</span>
@@ -349,7 +365,7 @@ const Dashboard = () => {
               </div>
 
               {/* Tags Distribution */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-6 border border-stone-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Tags Distribution</h3>
                   <span className="text-xs text-gray-500">Top tags</span>
@@ -379,7 +395,7 @@ const Dashboard = () => {
               </div>
 
               {/* Top Tags by Mood */}
-              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+              <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-6 border border-stone-200">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900">Top Tags by Mood</h3>
                   <span className="text-xs text-gray-500">Avg mood</span>
@@ -414,13 +430,13 @@ const Dashboard = () => {
         {/* Loading State */}
         {isLoading && (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-600"></div>
           </div>
         )}
 
         {/* Empty State */}
         {!isLoading && journals.length === 0 && (
-          <div className="text-center py-12 bg-white rounded-lg shadow-sm">
+          <div className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-lg shadow-md">
             <svg
               className="mx-auto h-12 w-12 text-gray-400"
               fill="none"
@@ -439,7 +455,7 @@ const Dashboard = () => {
             <div className="mt-6">
               <button
                 onClick={() => setShowEditorModal(true)}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition"
+                className="px-8 py-3 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
               >
                 Create Journal
               </button>
@@ -447,13 +463,34 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* No Search Results */}
+        {!isLoading && journals.length > 0 && filteredJournals.length === 0 && (
+          <div className="text-center py-12 bg-white/80 backdrop-blur-sm rounded-lg shadow-md">
+            <svg
+              className="mx-auto h-12 w-12 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            <h3 className="mt-2 text-lg font-medium text-gray-900">No results found</h3>
+            <p className="mt-1 text-gray-500">Try adjusting your search terms.</p>
+          </div>
+        )}
+
         {/* Journals Grid */}
-        {!isLoading && journals.length > 0 && (
+        {!isLoading && filteredJournals.length > 0 && (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {journals.map((journal) => (
+            {filteredJournals.map((journal) => (
               <div
                 key={journal._id}
-                className="bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 border border-gray-200"
+                className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md hover:shadow-lg transition-all duration-300 p-6 border border-stone-200"
               >
                 {/* Journal Header */}
                 <div className="flex justify-between items-start mb-3">
@@ -469,7 +506,7 @@ const Dashboard = () => {
                         setEditingJournal(journal);
                         setShowEditorModal(true);
                       }}
-                      className="text-gray-400 hover:text-blue-600 transition"
+                      className="text-gray-400 hover:text-stone-700 transition"
                       title="Edit"
                     >
                       <svg
@@ -566,7 +603,7 @@ const Dashboard = () => {
                     <span>{formatDate(journal.createdAt)}</span>
                     <button
                       onClick={() => navigate(`/journals/${journal._id}`)}
-                      className="text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-gray-700 hover:text-gray-900 font-medium"
                     >
                       Read more →
                     </button>
@@ -576,7 +613,7 @@ const Dashboard = () => {
                 {/* Delete Confirmation Modal */}
                 {deleteConfirm === journal._id && (
                   <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
+                    <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 max-w-sm mx-4 shadow-xl">
                       <h3 className="text-lg font-semibold text-gray-900 mb-2">
                         Delete Journal?
                       </h3>
@@ -587,13 +624,13 @@ const Dashboard = () => {
                       <div className="flex gap-3 justify-end">
                         <button
                           onClick={() => setDeleteConfirm(null)}
-                          className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                          className="px-4 py-2 text-gray-700 hover:bg-stone-100 rounded-full transition-all duration-300"
                         >
                           Cancel
                         </button>
                         <button
                           onClick={() => handleDeleteJournal(journal._id)}
-                          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition"
+                          className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all duration-300"
                         >
                           Delete
                         </button>

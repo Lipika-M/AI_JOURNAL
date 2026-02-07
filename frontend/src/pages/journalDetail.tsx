@@ -86,21 +86,21 @@ const JournalDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-600"></div>
       </div>
     );
   }
 
   if (error || !journal) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <nav className="bg-white shadow-sm border-b">
+      <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100">
+        <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-stone-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+                className="text-gray-700 hover:text-gray-900 font-medium flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -117,7 +117,7 @@ const JournalDetail = () => {
         </nav>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+          <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-8 text-center border border-stone-200">
             <div className="text-red-600 mb-4">
               <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -134,7 +134,7 @@ const JournalDetail = () => {
             </p>
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition"
+              className="px-6 py-2 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
             >
               Back to Dashboard
             </button>
@@ -145,14 +145,14 @@ const JournalDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100">
       {/* Navigation Bar */}
-      <nav className="bg-white shadow-sm border-b sticky top-0 z-40">
+      <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-stone-200 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <button
               onClick={() => navigate("/dashboard")}
-              className="text-blue-600 hover:text-blue-700 font-medium flex items-center gap-2"
+              className="text-gray-700 hover:text-gray-900 font-medium flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -167,7 +167,7 @@ const JournalDetail = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowEditorModal(true)}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-2"
+                className="px-4 py-2 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -186,7 +186,7 @@ const JournalDetail = () => {
               </button>
               <button
                 onClick={() => setDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition flex items-center gap-2"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -233,8 +233,8 @@ const JournalDetail = () => {
         )}
 
         {/* Journal Header */}
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">{journal.title}</h1>
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-8 mb-6 border border-stone-200">
+          <h1 className="text-4xl font-serif text-gray-800 mb-4">{journal.title}</h1>
 
           {/* Meta Information */}
           <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6 pb-6 border-b">
@@ -285,17 +285,17 @@ const JournalDetail = () => {
 
               {/* Mood Score */}
               {journal.moodScore !== undefined && (
-                <div className="p-4 rounded-lg border bg-blue-50 border-blue-200">
+                <div className="p-4 rounded-lg border bg-amber-50 border-amber-200">
                   <p className="text-sm text-gray-600 font-medium mb-1">Mood Score</p>
                   <div className="flex items-end gap-2">
-                    <span className="text-3xl font-bold text-blue-700">
+                    <span className="text-3xl font-bold text-amber-700">
                       {(journal.moodScore * 100).toFixed(0)}
                     </span>
                     <span className="text-gray-600 mb-1">%</span>
                   </div>
-                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className="mt-2 w-full bg-amber-200 rounded-full h-2">
                     <div
-                      className="bg-blue-600 h-2 rounded-full"
+                      className="bg-amber-600 h-2 rounded-full"
                       style={{
                         width: `${Math.max(0, Math.min(100, journal.moodScore * 100))}%`,
                       }}
@@ -322,7 +322,7 @@ const JournalDetail = () => {
                 {journal.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm font-medium"
+                    className="px-3 py-1 bg-stone-100 text-gray-700 rounded-full text-sm font-medium"
                   >
                     #{tag}
                   </span>
@@ -333,7 +333,7 @@ const JournalDetail = () => {
         </div>
 
         {/* Journal Content */}
-        <div className="bg-white rounded-lg shadow-sm p-8 mb-6">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-md p-8 mb-6 border border-stone-200">
           <div className="prose prose-lg max-w-none">
             <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
               {journal.content}
@@ -343,16 +343,16 @@ const JournalDetail = () => {
 
         {/* AI Summary Card (if available) */}
         {journal.summary && (
-          <div className="bg-purple-50 border border-purple-200 rounded-lg p-6">
+          <div className="bg-amber-50 border border-amber-200 rounded-lg p-6 shadow-md">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-purple-900 mb-2">AI Generated Summary</h3>
-                <p className="text-purple-800 leading-relaxed">{journal.summary}</p>
+                <h3 className="text-lg font-semibold text-gray-800 mb-2">AI Generated Summary</h3>
+                <p className="text-gray-700 leading-relaxed">{journal.summary}</p>
               </div>
             </div>
           </div>
@@ -362,7 +362,7 @@ const JournalDetail = () => {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full">
+          <div className="bg-white/95 backdrop-blur-sm rounded-lg p-6 max-w-sm w-full shadow-xl">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Journal?</h3>
             <p className="text-gray-600 mb-6">
               Are you sure you want to delete "{journal.title}"? This action cannot be undone.
@@ -370,7 +370,7 @@ const JournalDetail = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteConfirm(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+                className="px-4 py-2 text-gray-700 hover:bg-stone-100 rounded-full transition-all duration-300"
                 disabled={isDeleting}
               >
                 Cancel
@@ -378,7 +378,7 @@ const JournalDetail = () => {
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isDeleting ? (
                   <>

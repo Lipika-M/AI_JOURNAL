@@ -78,16 +78,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100 px-4">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-8 border border-stone-200">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              AI Journal
+            <h1 className="text-4xl font-serif text-gray-800 mb-2">
+              Solace
             </h1>
-            <p className="text-gray-600">Welcome back! Please log in.</p>
+            <p className="text-gray-600 italic">Welcome back! Please log in.</p>
           </div>
 
           {/* Error Alert */}
@@ -134,7 +134,7 @@ const Login = () => {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
                   formErrors.emailOrUsername
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-blue-500'
+                    : 'border-stone-300 focus:ring-stone-400'
                 }`}
                 disabled={isLoading}
               />
@@ -163,7 +163,7 @@ const Login = () => {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
                   formErrors.password
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-300 focus:ring-blue-500'
+                    : 'border-stone-300 focus:ring-stone-400'
                 }`}
                 disabled={isLoading}
               />
@@ -178,7 +178,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full py-3 px-4 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isLoading ? (
                 <>
@@ -226,7 +226,7 @@ const Login = () => {
           <div className="mt-6">
             <Link
               to="/register"
-              className="w-full block text-center py-2 px-4 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition"
+              className="w-full block text-center py-2 px-4 border border-stone-300 rounded-full text-gray-700 font-medium hover:bg-stone-50 transition-all duration-300"
             >
               Create Account
             </Link>
