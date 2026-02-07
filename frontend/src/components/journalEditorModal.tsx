@@ -1,9 +1,11 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import journalApi from '../api/journal.api';
+import type { Journal } from '../types/journal.type';
 
 interface Props {
   onClose: () => void;
   onSuccess: () => void;
+  journal?: Journal | null;
 }
 
 interface FormData {
@@ -17,12 +19,23 @@ interface FormErrors {
   content?: string;
 }
 
-const JournalEditorModal = ({ onClose, onSuccess }: Props) => {
+const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
+  const isEditMode = !!journal;
   const [formData, setFormData] = useState<FormData>({
-    title: '',
-    content: '',
-    tags: '',
+    title: journal?.title || '',
+    content: journal?.content || '',
+    tags: journal?.tags?.join(', ') || '',
   });
+
+  useEffect(() => {
+    if (journal) {
+      setFormData({
+        title: journal.title,
+        content: journal.content,
+        tags: journal.tags?.join(', ') || '',
+      });
+    }
+  }, [journal]);
   const [formErrors, setFormErrors] = useState<FormErrors>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,17 +78,28 @@ const JournalEditorModal = ({ onClose, onSuccess }: Props) => {
         .map((tag) => tag.trim())
         .filter((tag) => tag.length > 0);
 
-      await journalApi.createJournal({
-        title: formData.title,
-        content: formData.content,
-        tags: tags.length > 0 ? tags : undefined,
-      });
+      if (isEditMode && journal) {
+        await journalApi.updateJournal(journal._id, {
+          title: formData.title,
+          content: formData.content,
+          tags: tags.length > 0 ? tags : undefined,
+        });
+      } else {
+        await journalApi.createJournal({
+          title: formData.title,
+          content: formData.content,
+          tags: tags.length > 0 ? tags : undefined,
+        });
+      }
 
       onSuccess();
       onClose();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to create journal');
-      console.error('Error creating journal:', err);
+      setError(
+        err.response?.data?.message ||
+          `Failed to ${isEditMode ? 'update' : 'create'} journal`
+      );
+      console.error(`Error ${isEditMode ? 'updating' : 'creating'} journal:`, err);
     } finally {
       setIsLoading(false);
     }
@@ -86,7 +110,9 @@ const JournalEditorModal = ({ onClose, onSuccess }: Props) => {
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">Create New Journal</h2>
+          <h2 className="text-2xl font-bold text-gray-900">
+            {isEditMode ? 'Edit Journal' : 'Create New Journal'}
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 transition"
@@ -233,7 +259,7 @@ const JournalEditorModal = ({ onClose, onSuccess }: Props) => {
                   Saving...
                 </>
               ) : (
-                'Save Journal'
+                isEditMode ? 'Update Journal' : 'Save Journal'
               )}
             </button>
           </div>

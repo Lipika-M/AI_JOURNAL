@@ -2,6 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import journalApi from "../api/journal.api";
+import analyticsApi, {
+  type MoodTrendPoint,
+  type SentimentBucket,
+  type TagBucket,
+  type AverageMoodByTag,
+} from "../api/analytics.api";
 import type { Journal } from "../types/journal.type";
 import JournalEditorModal from "../components/journalEditorModal";
 
@@ -13,9 +19,20 @@ const Dashboard = () => {
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
   const [showEditorModal, setShowEditorModal] = useState(false);
+  const [editingJournal, setEditingJournal] = useState<Journal | null>(null);
+  const [moodTrends, setMoodTrends] = useState<MoodTrendPoint[]>([]);
+  const [sentimentDistribution, setSentimentDistribution] = useState<
+    SentimentBucket[]
+  >([]);
+  const [tagsDistribution, setTagsDistribution] = useState<TagBucket[]>([]);
+  const [averageMoodByTag, setAverageMoodByTag] = useState<AverageMoodByTag[]>(
+    []
+  );
+  const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
 
   useEffect(() => {
     fetchJournals();
+    fetchAnalytics();
   }, []);
 
   // Poll for pending journals
@@ -55,6 +72,26 @@ const Dashboard = () => {
     }
   };
 
+  const fetchAnalytics = async () => {
+    try {
+      setIsAnalyticsLoading(true);
+      const [moodRes, sentimentRes, tagsRes, avgMoodRes] = await Promise.all([
+        analyticsApi.getMoodTrends(),
+        analyticsApi.getSentimentDistribution(),
+        analyticsApi.getTagsDistribution(),
+        analyticsApi.getAverageMoodByTag(),
+      ]);
+      setMoodTrends(moodRes.data || []);
+      setSentimentDistribution(sentimentRes.data || []);
+      setTagsDistribution(tagsRes.data || []);
+      setAverageMoodByTag(avgMoodRes.data || []);
+    } catch (err) {
+      console.error("Error fetching analytics:", err);
+    } finally {
+      setIsAnalyticsLoading(false);
+    }
+  };
+
   const handleDeleteJournal = async (id: string) => {
     try {
       await journalApi.deleteJournal(id);
@@ -88,6 +125,19 @@ const Dashboard = () => {
     }
   };
 
+  const getSentimentBarColor = (sentiment: string) => {
+    switch (sentiment) {
+      case "positive":
+        return "bg-green-500";
+      case "negative":
+        return "bg-red-500";
+      case "neutral":
+        return "bg-gray-500";
+      default:
+        return "bg-gray-400";
+    }
+  };
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -97,6 +147,23 @@ const Dashboard = () => {
       day: "numeric",
     });
   };
+
+  const moodTrendPoints = moodTrends
+    .map((point, index) => {
+      const x = moodTrends.length > 1 ? (index / (moodTrends.length - 1)) * 100 : 50;
+      const y = 100 - Math.max(0, Math.min(1, point.averageScore)) * 100;
+      return `${x},${y}`;
+    })
+    .join(" ");
+
+  const sentimentTotal = sentimentDistribution.reduce(
+    (sum, item) => sum + item.count,
+    0
+  );
+
+  const topTagsByMood = [...averageMoodByTag]
+    .sort((a, b) => b.averageMood - a.averageMood)
+    .slice(0, 5);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -189,6 +256,161 @@ const Dashboard = () => {
           </div>
         )}
 
+        {/* Analytics Section */}
+        <section className="mb-10">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Analytics</h2>
+              <p className="text-sm text-gray-600">Your mood patterns at a glance</p>
+            </div>
+          </div>
+
+          {isAnalyticsLoading ? (
+            <div className="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : (
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Mood Trends */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Mood Trends</h3>
+                  <span className="text-xs text-gray-500">Last entries</span>
+                </div>
+                {moodTrends.length === 0 ? (
+                  <p className="text-sm text-gray-500">No mood data yet.</p>
+                ) : (
+                  <div className="h-36">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <defs>
+                        <linearGradient id="moodLine" x1="0" y1="0" x2="1" y2="0">
+                          <stop offset="0%" stopColor="#2563eb" />
+                          <stop offset="100%" stopColor="#60a5fa" />
+                        </linearGradient>
+                      </defs>
+                      <polyline
+                        fill="none"
+                        stroke="url(#moodLine)"
+                        strokeWidth="2"
+                        points={moodTrendPoints}
+                      />
+                      {moodTrends.map((point, index) => {
+                        const x =
+                          moodTrends.length > 1
+                            ? (index / (moodTrends.length - 1)) * 100
+                            : 50;
+                        const y = 100 - Math.max(0, Math.min(1, point.averageScore)) * 100;
+                        return (
+                          <circle key={point.date} cx={x} cy={y} r="1.8" fill="#2563eb" />
+                        );
+                      })}
+                    </svg>
+                    <div className="mt-2 flex justify-between text-xs text-gray-500">
+                      <span>{moodTrends[0]?.date}</span>
+                      <span>{moodTrends[moodTrends.length - 1]?.date}</span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Sentiment Distribution */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Sentiment Split</h3>
+                  <span className="text-xs text-gray-500">Share of entries</span>
+                </div>
+                {sentimentDistribution.length === 0 ? (
+                  <p className="text-sm text-gray-500">No sentiment data yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {sentimentDistribution.map((item) => {
+                      const percent = sentimentTotal
+                        ? Math.round((item.count / sentimentTotal) * 100)
+                        : 0;
+                      return (
+                        <div key={item.sentiment}>
+                          <div className="flex justify-between text-xs text-gray-600 mb-1">
+                            <span className="capitalize">{item.sentiment}</span>
+                            <span>{percent}%</span>
+                          </div>
+                          <div className="h-2 rounded-full bg-gray-100">
+                            <div
+                              className={`h-2 rounded-full ${getSentimentBarColor(
+                                item.sentiment
+                              )}`}
+                              style={{ width: `${percent}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Tags Distribution */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Tags Distribution</h3>
+                  <span className="text-xs text-gray-500">Top tags</span>
+                </div>
+                {tagsDistribution.length === 0 ? (
+                  <p className="text-sm text-gray-500">No tags data yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {tagsDistribution.slice(0, 6).map((tag) => (
+                      <div key={tag.tag} className="flex items-center gap-3">
+                        <span className="text-sm text-gray-700 w-24 truncate">#{tag.tag}</span>
+                        <div className="flex-1 h-2 rounded-full bg-gray-100">
+                          <div
+                            className="h-2 rounded-full bg-blue-500"
+                            style={{
+                              width: `${Math.min(100, tag.count * 10)}%`,
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-500 w-8 text-right">
+                          {tag.count}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Top Tags by Mood */}
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-gray-900">Top Tags by Mood</h3>
+                  <span className="text-xs text-gray-500">Avg mood</span>
+                </div>
+                {topTagsByMood.length === 0 ? (
+                  <p className="text-sm text-gray-500">No mood by tag data yet.</p>
+                ) : (
+                  <div className="space-y-3">
+                    {topTagsByMood.map((tag) => (
+                      <div key={tag.tag} className="flex items-center gap-3">
+                        <span className="text-sm text-gray-700 w-24 truncate">#{tag.tag}</span>
+                        <div className="flex-1 h-2 rounded-full bg-gray-100">
+                          <div
+                            className="h-2 rounded-full bg-emerald-500"
+                            style={{
+                              width: `${Math.max(0, Math.min(100, tag.averageMood * 100))}%`,
+                            }}
+                          ></div>
+                        </div>
+                        <span className="text-xs text-gray-500 w-10 text-right">
+                          {Math.round(tag.averageMood * 100)}%
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </section>
+
         {/* Loading State */}
         {isLoading && (
           <div className="flex justify-center items-center py-12">
@@ -243,7 +465,10 @@ const Dashboard = () => {
                   </h3>
                   <div className="flex gap-2">
                     <button
-                      onClick={() => navigate(`/journals/${journal._id}/edit`)}
+                      onClick={() => {
+                        setEditingJournal(journal);
+                        setShowEditorModal(true);
+                      }}
                       className="text-gray-400 hover:text-blue-600 transition"
                       title="Edit"
                     >
@@ -385,8 +610,15 @@ const Dashboard = () => {
       {/* Journal Editor Modal */}
       {showEditorModal && (
         <JournalEditorModal
-          onClose={() => setShowEditorModal(false)}
-          onSuccess={fetchJournals}
+          onClose={() => {
+            setShowEditorModal(false);
+            setEditingJournal(null);
+          }}
+          onSuccess={() => {
+            fetchJournals();
+            setEditingJournal(null);
+          }}
+          journal={editingJournal}
         />
       )}
     </div>

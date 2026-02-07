@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import journalApi from "../api/journal.api";
 import type { Journal } from "../types/journal.type";
+import JournalEditorModal from "../components/journalEditorModal";
 
 const JournalDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -11,6 +12,7 @@ const JournalDetail = () => {
   const [error, setError] = useState<string | null>(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showEditorModal, setShowEditorModal] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -164,7 +166,7 @@ const JournalDetail = () => {
             </button>
             <div className="flex gap-2">
               <button
-                onClick={() => navigate(`/journals/${id}/edit`)}
+                onClick={() => setShowEditorModal(true)}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition flex items-center gap-2"
               >
                 <svg
@@ -409,6 +411,18 @@ const JournalDetail = () => {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Journal Editor Modal */}
+      {showEditorModal && journal && (
+        <JournalEditorModal
+          onClose={() => setShowEditorModal(false)}
+          onSuccess={() => {
+            fetchJournal();
+            setShowEditorModal(false);
+          }}
+          journal={journal}
+        />
       )}
     </div>
   );
