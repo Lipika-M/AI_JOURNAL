@@ -57,4 +57,9 @@ const journalSchema = new Schema(
     }
    }
 );
+
+journalSchema.index({ owner: 1, isDeleted: 1, createdAt: -1 });
+journalSchema.index({ owner: 1, isDeleted: 1, _id: 1 });
+journalSchema.index({ owner: 1, sentiment: 1 });
+journalSchema.index({ owner: 1, tags: 1 });
 export const Journal=mongoose.model("Journal", journalSchema);

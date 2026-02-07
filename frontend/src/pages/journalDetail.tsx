@@ -287,14 +287,16 @@ const JournalDetail = () => {
                   <p className="text-sm text-gray-600 font-medium mb-1">Mood Score</p>
                   <div className="flex items-end gap-2">
                     <span className="text-3xl font-bold text-blue-700">
-                      {journal.moodScore}
+                      {(journal.moodScore * 100).toFixed(0)}
                     </span>
-                    <span className="text-gray-600 mb-1">/10</span>
+                    <span className="text-gray-600 mb-1">%</span>
                   </div>
                   <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
                     <div
                       className="bg-blue-600 h-2 rounded-full"
-                      style={{ width: `${(journal.moodScore / 10) * 100}%` }}
+                      style={{
+                        width: `${Math.max(0, Math.min(100, journal.moodScore * 100))}%`,
+                      }}
                     ></div>
                   </div>
                 </div>

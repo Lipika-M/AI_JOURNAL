@@ -318,7 +318,7 @@ const Dashboard = () => {
                       </span>
                       {journal.moodScore !== undefined && (
                         <span className="text-xs text-gray-500">
-                          Score: {Math.round(journal.moodScore * 100)}
+                          Score: {(journal.moodScore * 100).toFixed(0)}%
                         </span>
                       )}
                     </div>
