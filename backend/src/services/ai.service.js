@@ -12,7 +12,7 @@ Analyze the following journal entry.
 Return ONLY valid JSON in this exact format:
 {
   "sentiment": "positive" | "negative" | "neutral",
-  "moodScore": number between 0 and 10 (0=very negative, 5=neutral, 10=very positive),
+  "moodScore": number between 0 and 1 (0=very negative, 0.5=neutral, 1=very positive),
   "summary": string (max 30 words)
 }
 
@@ -44,8 +44,8 @@ Journal:
       sentiment: parsed.sentiment ?? "neutral",
       moodScore:
         typeof parsed.moodScore === "number"
-          ? Math.max(0, Math.min(10, parsed.moodScore))
-          : 5,
+          ? Math.max(0, Math.min(1, parsed.moodScore))
+          : 0.5,
       summary: parsed.summary ?? null,
     };
 
