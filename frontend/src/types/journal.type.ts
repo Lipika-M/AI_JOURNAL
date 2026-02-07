@@ -7,6 +7,7 @@ export interface Journal {
     moodScore?: number,
     summary?: string,
     tags?: string[],
+    aiStatus?: "pending" | "completed" | "failed",
     isDeleted?: boolean,
     createdAt?: string,
     updatedAt?: string,

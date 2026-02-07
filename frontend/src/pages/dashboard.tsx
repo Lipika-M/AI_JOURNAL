@@ -18,6 +18,29 @@ const Dashboard = () => {
     fetchJournals();
   }, []);
 
+  // Poll for pending journals
+  useEffect(() => {
+    const pendingJournals = journals.filter((j) => j.aiStatus === "pending");
+    if (pendingJournals.length === 0) return;
+
+    const interval = setInterval(async () => {
+      try {
+        for (const journal of pendingJournals) {
+          const response = await journalApi.getJournalById(journal._id);
+          setJournals((prev) =>
+            prev.map((j) =>
+              j._id === journal._id ? { ...j, ...response.data } : j
+            )
+          );
+        }
+      } catch (err) {
+        console.error("Error polling journals:", err);
+      }
+    }, 1500); // Poll every 1.5 seconds
+
+    return () => clearInterval(interval);
+  }, [journals]);
+
   const fetchJournals = async () => {
     try {
       setIsLoading(true);
@@ -267,7 +290,24 @@ const Dashboard = () => {
 
                 {/* Journal Meta */}
                 <div className="space-y-2">
-                  {journal.sentiment && (
+                  {journal.aiStatus === "pending" && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs px-2 py-1 rounded-full font-medium bg-yellow-50 text-yellow-700 flex items-center gap-1">
+                        <svg className="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        Analyzing…
+                      </span>
+                    </div>
+                  )}
+
+                  {journal.aiStatus === "failed" && (
+                    <div className="text-xs px-2 py-1 rounded-full font-medium bg-red-50 text-red-700">
+                      Analysis Failed
+                    </div>
+                  )}
+
+                  {journal.sentiment && journal.aiStatus !== "pending" && (
                     <div className="flex items-center gap-2">
                       <span
                         className={`text-xs px-2 py-1 rounded-full font-medium ${getSentimentColor(
@@ -278,7 +318,7 @@ const Dashboard = () => {
                       </span>
                       {journal.moodScore !== undefined && (
                         <span className="text-xs text-gray-500">
-                          Score: {journal.moodScore}/10
+                          Score: {Math.round(journal.moodScore * 100)}
                         </span>
                       )}
                     </div>

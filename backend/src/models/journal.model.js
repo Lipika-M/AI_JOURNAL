@@ -32,6 +32,11 @@ const journalSchema = new Schema(
     summary: {
       type: String,
     },
+    aiStatus: {
+      type: String,
+      enum: ["pending", "completed", "failed"],
+      default: "pending",
+    },
   tags: {
   type: [String],
   default: [],

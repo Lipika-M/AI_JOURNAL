@@ -22,26 +22,32 @@ const createJournal = asyncHandler(async (req, res) => {
     title: title.trim(),
     content: content.trim(),
     tags: normalizedTags,
+    aiStatus: "pending",
   });
-
-  // Run AI analysis asynchronously but don't block the response
-  analyzeJournal(journal.content)
-    .then(async (aiResult) => {
-      journal.sentiment = aiResult.sentiment;
-      journal.moodScore = aiResult.moodScore;
-      journal.summary = aiResult.summary;
-      await journal.save({ validateBeforeSave: false });
-      console.log("AI Analysis completed successfully for journal:", journal._id);
-    })
-    .catch((error) => {
-      console.error("AI Analysis Error for journal:", journal._id);
-      console.error("Error message:", error.message);
-      console.error("Full Error:", error);
-    });
 
   res
     .status(201)
     .json(new ApiResponse(201, "Journal created successfully", journal));
+
+  // Run AI analysis asynchronously in the background
+  analyzeJournal(journal.content)
+    .then(async (aiResult) => {
+      await Journal.findByIdAndUpdate(journal._id, {
+        sentiment: aiResult.sentiment,
+        moodScore: aiResult.moodScore,
+        summary: aiResult.summary,
+        aiStatus: "completed",
+      });
+      console.log("AI Analysis completed successfully for journal:", journal._id);
+    })
+    .catch(async (error) => {
+      await Journal.findByIdAndUpdate(journal._id, {
+        aiStatus: "failed",
+      });
+      console.error("AI Analysis Error for journal:", journal._id);
+      console.error("Error message:", error.message);
+      console.error("Full Error:", error);
+    });
 });
 
 const updateJournal = asyncHandler(async (req, res) => {
