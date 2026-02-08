@@ -632,9 +632,7 @@ const getSentimentColor = (sentiment?: string) => {
                         {/* Sentiment Badge */}
                         {journal.sentiment && journal.aiStatus !== "pending" && (
                           <div className="mb-5 flex items-center gap-2">
-                             <div
-  className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${getSentimentColor(journal.sentiment)}`}
->
+                             <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${getSentimentColor(journal.sentiment)}`}>
                               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1.5"/>
                                 {journal.sentiment === 'positive' && <path d="M7 10a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2zm-4 2a3 3 0 106 0" fill="none" stroke="currentColor" strokeWidth="1.5"/>}
