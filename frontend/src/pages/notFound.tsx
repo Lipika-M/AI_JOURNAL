@@ -53,13 +53,13 @@ const NotFound = () => {
           <div className="space-y-3">
             <button
               onClick={handleGoHome}
-              className="w-full py-3 px-4 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+              className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300"
             >
               {isAuthenticated ? 'Go to Dashboard' : 'Go to Login'}
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="w-full py-3 px-4 border border-stone-300 text-gray-700 font-medium rounded-full hover:bg-stone-50 transition-all duration-300"
+              className="w-full rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-5 py-2.5 font-medium transition-all duration-300 border border-stone-300"
             >
               Go Back
             </button>

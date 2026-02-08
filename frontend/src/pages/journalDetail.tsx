@@ -94,13 +94,13 @@ const JournalDetail = () => {
 
   if (error || !journal) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-green-50/30 to-amber-50/40">
         <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-stone-200">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="text-gray-700 hover:text-gray-900 font-medium flex items-center gap-2"
+                className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 font-medium flex items-center gap-2 px-3 py-1.5"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -134,7 +134,7 @@ const JournalDetail = () => {
             </p>
             <button
               onClick={() => navigate("/dashboard")}
-              className="px-6 py-2 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-6 py-2 font-medium transition-all duration-300"
             >
               Back to Dashboard
             </button>
@@ -145,14 +145,14 @@ const JournalDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-green-50/30 to-amber-50/40">
       {/* Navigation Bar */}
       <nav className="bg-white/80 backdrop-blur-sm shadow-sm border-b border-stone-200 sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <button
               onClick={() => navigate("/dashboard")}
-              className="text-gray-700 hover:text-gray-900 font-medium flex items-center gap-2"
+              className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 font-medium flex items-center gap-2 px-3 py-1.5"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -167,7 +167,7 @@ const JournalDetail = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowEditorModal(true)}
-                className="px-4 py-2 bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-4 py-2 font-medium transition-all duration-300 flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -186,7 +186,7 @@ const JournalDetail = () => {
               </button>
               <button
                 onClick={() => setDeleteConfirm(true)}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-full transition-all duration-300 shadow-md hover:shadow-lg flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-red-600 hover:to-red-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-4 py-2 font-medium transition-all duration-300 flex items-center gap-2"
               >
                 <svg
                   className="w-5 h-5"
@@ -370,7 +370,7 @@ const JournalDetail = () => {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteConfirm(false)}
-                className="px-4 py-2 text-gray-700 hover:bg-stone-100 rounded-full transition-all duration-300"
+                className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-4 py-2 transition-all duration-300"
                 disabled={isDeleting}
               >
                 Cancel
@@ -378,7 +378,7 @@ const JournalDetail = () => {
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-red-600 hover:to-red-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-4 py-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {isDeleting ? (
                   <>

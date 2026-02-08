@@ -23,13 +23,13 @@ const LandingPage = () => {
       <nav className="relative z-10 flex justify-end items-center px-8 py-6 gap-4">
         <button
           onClick={() => navigate("/login")}
-          className="px-8 py-3 rounded-full bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium transition-all duration-300 shadow-md hover:shadow-lg"
+          className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-8 py-3 font-medium transition-all duration-300"
         >
           Login
         </button>
         <button
           onClick={() => navigate("/register")}
-          className="px-8 py-3 rounded-full bg-[#E8D7B8] hover:bg-[#DCC9A3] text-gray-800 font-medium transition-all duration-300 shadow-md hover:shadow-lg"
+          className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-8 py-3 font-medium transition-all duration-300"
         >
           Sign Up
         </button>

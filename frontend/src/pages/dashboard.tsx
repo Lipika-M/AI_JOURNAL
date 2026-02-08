@@ -113,18 +113,17 @@ const Dashboard = () => {
     }
   };
 
-  const getSentimentColor = (sentiment?: string) => {
-    switch (sentiment) {
-      case "positive":
-        return "text-cyan-700 bg-cyan-50 border border-cyan-200";
-      case "negative":
-        return "text-red-700 bg-red-50 border border-red-200";
-      case "neutral":
-        return "text-gray-700 bg-gray-50 border border-gray-200";
-      default:
-        return "text-gray-700 bg-gray-50 border border-gray-200";
-    }
-  };
+const getSentimentColor = (sentiment?: string) => {
+  switch (sentiment) {
+    case "positive":
+      return "bg-emerald-100 text-emerald-700 border-emerald-200";
+    case "negative":
+      return "bg-rose-100 text-rose-700 border-rose-200";
+    default:
+      return "bg-slate-100 text-slate-700 border-slate-200";
+  }
+};
+
 
   const getSentimentBarColor = (sentiment: string) => {
     switch (sentiment) {
@@ -154,9 +153,9 @@ const Dashboard = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-green-50/30 to-amber-50/40">
       {/* Navigation Bar */}
-      <nav className="bg-white/90 backdrop-blur-md shadow-sm border-b border-stone-200 sticky top-0 z-50">
+      <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
@@ -171,7 +170,7 @@ const Dashboard = () => {
               <span className="text-sm text-gray-600">{journals.length} {journals.length === 1 ? 'entry' : 'entries'}</span>
               <button
                 onClick={handleLogout}
-                className="px-4 py-1.5 text-gray-600 hover:text-gray-800 text-sm font-medium rounded-lg hover:bg-gray-100 transition-all duration-300 flex items-center gap-2"
+                className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-4 py-1.5 text-sm font-medium transition-all duration-300 flex items-center gap-2"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -194,7 +193,7 @@ const Dashboard = () => {
             </div>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="px-5 py-2.5 bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium rounded-lg transition-all duration-300 shadow-sm hover:shadow-md flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -212,7 +211,7 @@ const Dashboard = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-5 pr-14 py-3.5 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:bg-white text-sm shadow-sm transition-all"
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-500 to-cyan-400 hover:from-blue-600 hover:to-cyan-500 text-white rounded-lg flex items-center justify-center transition-all duration-300 shadow-sm">
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl flex items-center justify-center transition-all duration-300">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -250,7 +249,7 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => setError(null)}
-                className="ml-auto text-red-400 hover:text-red-600"
+                className="ml-auto rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -269,7 +268,7 @@ const Dashboard = () => {
           <section className="mb-12">
             {/* Mood Trends Chart - Full Width */}
             {moodTrends.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+              <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8 mb-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                     <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -366,7 +365,7 @@ const Dashboard = () => {
 
               {/* Sentiments */}
               {sentimentDistribution.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8 h-full min-h-[520px] flex flex-col">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                       <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -377,7 +376,7 @@ const Dashboard = () => {
                   </div>
                   
                   {/* Bar Chart Visualization */}
-                  <div className="space-y-6">
+                  <div className="space-y-6 flex-1">
                     {/* Chart with Y-axis */}
                     <div className="flex gap-4">
                       {/* Y-axis labels */}
@@ -446,7 +445,7 @@ const Dashboard = () => {
               )}
               {/* Top Tags */}
               {tagsDistribution.length > 0 && (
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8 h-full min-h-[520px] flex flex-col">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                       <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -455,9 +454,9 @@ const Dashboard = () => {
                     </div>
                     <h3 className="text-lg font-semibold text-gray-900">Top Tags</h3>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-2 flex-1">
                     {tagsDistribution.slice(0, 5).map((tag, index) => (
-                      <div key={tag.tag} className="flex items-center gap-4 bg-gray-50 hover:bg-gray-100 px-4 py-3 rounded-xl transition-colors">
+                      <div key={tag.tag} className="flex items-center gap-4 bg-gray-50/70 hover:bg-gray-100/80 px-4 py-3 rounded-xl transition-colors">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                           {index + 1}
                         </div>
@@ -474,7 +473,7 @@ const Dashboard = () => {
 
             {/* Best Moods - Horizontal Cards */}
             {topTagsByMood.length > 0 && (
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+              <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
                     <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -529,7 +528,7 @@ const Dashboard = () => {
             <p className="text-gray-600 mb-6">Create your first journal entry to begin tracking your thoughts and moods.</p>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-teal-400 hover:from-blue-600 hover:to-teal-500 text-white font-medium rounded-lg transition-all duration-300 shadow-sm hover:shadow-md"
+              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-6 py-2.5 font-medium transition-all duration-300"
             >
               Create Your First Entry
             </button>
@@ -565,7 +564,7 @@ const Dashboard = () => {
             <h3 className="text-xl font-semibold text-gray-900 mb-8">Recent Entries</h3>
             <div className="relative">
               {/* Timeline line - faded gradient */}
-              <div className="absolute left-11 top-0 bottom-0 w-1.5 bg-gradient-to-b from-cyan-400 via-cyan-300 to-transparent opacity-70"></div>
+              <div className="absolute left-8 top-20 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-green-200 to-transparent"></div>
               
               {/* Timeline items */}
               <div className="space-y-6">
@@ -578,21 +577,28 @@ const Dashboard = () => {
                     <div key={journal._id} className="flex gap-6">
                       {/* Date Circle */}
                       <div className="flex flex-col items-center pt-1 relative z-10">
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cyan-300 via-cyan-400 to-teal-500 flex flex-col items-center justify-center text-white shadow-lg border-4 border-white">
-                          <div className="text-xs font-semibold text-white">{monthShort}</div>
-                          <div className="text-2xl font-bold text-white">{day}</div>
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex flex-col items-center justify-center shadow-lg shadow-blue-200/50 relative z-10">
+                          <div className="text-xs font-light text-white">{monthShort}</div>
+                          <div className="text-lg font-semibold leading-tight text-white">{day}</div>
+
                         </div>
                       </div>
                       
                       {/* Card */}
-                      <div className="flex-1 bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300 p-7 cursor-pointer" onClick={() => navigate(`/journals/${journal._id}`)}>
+                      <div
+                        className="flex-1 bg-white border border-slate-100 
+             hover:shadow-md hover:shadow-slate-200/60 
+             transition-all duration-300 rounded-2xl p-8 cursor-pointer"
+                        onClick={() => navigate(`/journals/${journal._id}`)}
+                      >
+
                         {/* Header */}
                         <div className="flex justify-between items-start mb-4">
                           <div className="flex-1">
                             <div className="flex items-center gap-3 mb-2">
-                              <h3 className="text-2xl font-bold text-gray-900">{journal.title}</h3>
+                              <h3 className="text-2xl font-semibold text-gray-900">{journal.title}</h3>
                               {journal.aiStatus !== "pending" && (
-                                <span className="text-xs px-3 py-1 rounded-full font-semibold bg-green-100 text-green-700 border border-green-300">
+                                <span className="text-xs px-3 py-1 rounded-full font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                   Success
                                 </span>
                               )}
@@ -605,7 +611,7 @@ const Dashboard = () => {
                                 setEditingJournal(journal);
                                 setShowEditorModal(true);
                               }}
-                              className="px-5 py-2 text-gray-700 hover:text-gray-900 hover:bg-gray-100 rounded-lg text-sm font-semibold transition border border-gray-300"
+                              className="rounded-full text-slate-600 hover:text-slate-800 hover:bg-slate-50 hover:border-slate-300 px-5 py-2 text-sm font-semibold transition border border-slate-200 bg-white"
                               title="Edit"
                             >
                               Edit
@@ -615,7 +621,7 @@ const Dashboard = () => {
                                 e.stopPropagation();
                                 setDeleteConfirm(journal._id);
                               }}
-                              className="px-5 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-lg text-sm font-semibold transition border border-gray-300"
+                              className="rounded-full text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 px-5 py-2 text-sm font-semibold transition border border-slate-200 bg-white"
                               title="Delete"
                             >
                               Delete
@@ -626,7 +632,9 @@ const Dashboard = () => {
                         {/* Sentiment Badge */}
                         {journal.sentiment && journal.aiStatus !== "pending" && (
                           <div className="mb-5 flex items-center gap-2">
-                            <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${getSentimentColor(journal.sentiment)}`}>
+                             <div
+  className={`flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold ${getSentimentColor(journal.sentiment)}`}
+>
                               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <circle cx="10" cy="10" r="8" fill="none" stroke="currentColor" strokeWidth="1.5"/>
                                 {journal.sentiment === 'positive' && <path d="M7 10a1 1 0 100-2 1 1 0 000 2zm6 0a1 1 0 100-2 1 1 0 000 2zm-4 2a3 3 0 106 0" fill="none" stroke="currentColor" strokeWidth="1.5"/>}
@@ -639,7 +647,7 @@ const Dashboard = () => {
                         )}
 
                         {/* Content */}
-                        <p className="text-gray-600 text-sm leading-relaxed mb-5 line-clamp-4 font-medium">
+                        <p className="text-gray-600 text-base leading-relaxed mb-5 line-clamp-4">
                           {journal.content}
                         </p>
 
@@ -649,7 +657,7 @@ const Dashboard = () => {
                             {journal.tags.map((tag, idx) => (
                               <span
                                 key={idx}
-                                className="text-xs px-4 py-2 bg-blue-50 text-blue-700 rounded-full border border-blue-200 font-semibold"
+                                className="text-sm px-4 py-1 rounded-full bg-slate-50 text-slate-600"
                               >
                                 {tag}
                               </span>
@@ -679,13 +687,13 @@ const Dashboard = () => {
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 px-4 py-2.5 text-gray-700 hover:bg-stone-100 rounded-full transition-all duration-300 font-medium"
+                className="flex-1 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-4 py-2.5 transition-all duration-300 font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteJournal(deleteConfirm)}
-                className="flex-1 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all duration-300 font-medium"
+                className="flex-1 bg-gradient-to-r from-blue-500 to-green-500 hover:from-red-600 hover:to-red-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-4 py-2.5 transition-all duration-300 font-medium"
               >
                 Delete
               </button>

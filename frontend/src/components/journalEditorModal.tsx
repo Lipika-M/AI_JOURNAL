@@ -115,7 +115,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition"
+            className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition p-1"
             disabled={isLoading}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -224,7 +224,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
+              className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-6 py-2 transition"
               disabled={isLoading}
             >
               Cancel
@@ -232,7 +232,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-6 py-2 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoading ? (
                 <>
