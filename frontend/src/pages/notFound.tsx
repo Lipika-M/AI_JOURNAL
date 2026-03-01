@@ -14,7 +14,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-stone-100 via-neutral-50 to-stone-100 px-4">
+    <div className="app-sky-bg min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
@@ -36,7 +36,7 @@ const NotFound = () => {
         </div>
 
         {/* Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-lg shadow-lg p-8 border border-stone-200">
+        <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-lg p-8 border border-white/60">
           {/* 404 Text */}
           <h1 className="text-6xl font-bold text-gray-800 mb-2">404</h1>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -53,7 +53,7 @@ const NotFound = () => {
           <div className="space-y-3">
             <button
               onClick={handleGoHome}
-              className="w-full bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300"
+              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300"
             >
               {isAuthenticated ? 'Go to Dashboard' : 'Go to Login'}
             </button>

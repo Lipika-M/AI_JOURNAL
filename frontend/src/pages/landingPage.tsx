@@ -29,7 +29,7 @@ const LandingPage = () => {
         </button>
         <button
           onClick={() => navigate("/register")}
-          className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-8 py-3 font-medium transition-all duration-300"
+          className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-8 py-3 font-medium transition-all duration-300"
         >
           Sign Up
         </button>

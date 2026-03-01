@@ -106,10 +106,10 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/60">
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
+        <div className="sticky top-0 bg-white/70 backdrop-blur-md border-b border-white/60 px-6 py-4 flex justify-between items-center">
           <h2 className="text-2xl font-bold text-gray-900">
             {isEditMode ? 'Edit Journal' : 'Create New Journal'}
           </h2>
@@ -232,7 +232,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-6 py-2 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-6 py-2 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoading ? (
                 <>

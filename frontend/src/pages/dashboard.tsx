@@ -153,9 +153,9 @@ const getSentimentColor = (sentiment?: string) => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/50 via-green-50/30 to-amber-50/40">
+    <div className="app-sky-bg min-h-screen">
       {/* Navigation Bar */}
-      <nav className="bg-white/80 backdrop-blur-sm border-b border-slate-200/60 sticky top-0 z-50">
+      <nav className="bg-white/70 backdrop-blur-md border-b border-white/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
@@ -193,7 +193,7 @@ const getSentimentColor = (sentiment?: string) => {
             </div>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -209,9 +209,9 @@ const getSentimentColor = (sentiment?: string) => {
               placeholder="Search journals by title, content, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-5 pr-14 py-3.5 bg-white/50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent focus:bg-white text-sm shadow-sm transition-all"
+              className="w-full pl-5 pr-14 py-3.5 bg-white/70 backdrop-blur-md border border-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm shadow-sm transition-all"
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl flex items-center justify-center transition-all duration-300">
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl flex items-center justify-center transition-all duration-300">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -268,7 +268,7 @@ const getSentimentColor = (sentiment?: string) => {
           <section className="mb-12">
             {/* Mood Trends Chart - Full Width */}
             {moodTrends.length > 0 && (
-              <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8 mb-6">
+              <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 mb-6">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                     <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -365,10 +365,10 @@ const getSentimentColor = (sentiment?: string) => {
 
               {/* Sentiments */}
               {sentimentDistribution.length > 0 && (
-                <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8 h-full min-h-[520px] flex flex-col">
+                <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 h-full min-h-[520px] flex flex-col">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                     </div>
@@ -445,7 +445,7 @@ const getSentimentColor = (sentiment?: string) => {
               )}
               {/* Top Tags */}
               {tagsDistribution.length > 0 && (
-                <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8 h-full min-h-[520px] flex flex-col">
+                <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 h-full min-h-[520px] flex flex-col">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                       <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -473,10 +473,10 @@ const getSentimentColor = (sentiment?: string) => {
 
             {/* Best Moods - Horizontal Cards */}
             {topTagsByMood.length > 0 && (
-              <div className="bg-white/60 backdrop-blur-sm rounded-3xl shadow-sm border border-slate-200/60 p-8">
+              <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
@@ -484,8 +484,8 @@ const getSentimentColor = (sentiment?: string) => {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {topTagsByMood.map((tag) => (
-                    <div key={tag.tag} className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-200">
-                      <div className="text-3xl font-bold text-amber-600 mb-1">
+                    <div key={tag.tag} className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-purple-200">
+                      <div className="text-3xl font-bold text-purple-600 mb-1">
                         {Math.round(tag.averageMood * 100)}%
                       </div>
                       <div className="text-sm text-gray-600 font-medium truncate">
@@ -528,7 +528,7 @@ const getSentimentColor = (sentiment?: string) => {
             <p className="text-gray-600 mb-6">Create your first journal entry to begin tracking your thoughts and moods.</p>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="bg-gradient-to-r from-blue-500 to-green-500 hover:from-blue-600 hover:to-green-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-6 py-2.5 font-medium transition-all duration-300"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-6 py-2.5 font-medium transition-all duration-300"
             >
               Create Your First Entry
             </button>
@@ -577,7 +577,7 @@ const getSentimentColor = (sentiment?: string) => {
                     <div key={journal._id} className="flex gap-6">
                       {/* Date Circle */}
                       <div className="flex flex-col items-center pt-1 relative z-10">
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-green-400 rounded-full flex flex-col items-center justify-center shadow-lg shadow-blue-200/50 relative z-10">
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex flex-col items-center justify-center shadow-lg shadow-purple-200/50 relative z-10">
                           <div className="text-xs font-light text-white">{monthShort}</div>
                           <div className="text-lg font-semibold leading-tight text-white">{day}</div>
 
@@ -586,7 +586,7 @@ const getSentimentColor = (sentiment?: string) => {
                       
                       {/* Card */}
                       <div
-                        className="flex-1 bg-white border border-slate-100 
+                        className="flex-1 bg-white/70 backdrop-blur-md border border-white/60 
              hover:shadow-md hover:shadow-slate-200/60 
              transition-all duration-300 rounded-2xl p-8 cursor-pointer"
                         onClick={() => navigate(`/journals/${journal._id}`)}
@@ -675,7 +675,7 @@ const getSentimentColor = (sentiment?: string) => {
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-2xl">
+          <div className="bg-white/70 backdrop-blur-md rounded-xl p-6 max-w-sm w-full shadow-2xl border border-white/60">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Delete Entry?
             </h3>
@@ -691,7 +691,7 @@ const getSentimentColor = (sentiment?: string) => {
               </button>
               <button
                 onClick={() => handleDeleteJournal(deleteConfirm)}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-green-500 hover:from-red-600 hover:to-red-600 text-white shadow-lg shadow-blue-200/50 rounded-xl px-4 py-2.5 transition-all duration-300 font-medium"
+                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-4 py-2.5 transition-all duration-300 font-medium"
               >
                 Delete
               </button>

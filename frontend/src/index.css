@@ -9,8 +9,37 @@ body {
   font-family: "Poppins", sans-serif;
 }
 
+.app-sky-bg {
+  position: relative;
+  background-image: url("https://images.unsplash.com/photo-1695062536685-21759fbed347?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxwZWFjZWZ1bCUyMGxpZ2h0JTIwc2t5JTIwY2xvdWRzfGVufDF8fHx8MTc3MDY1NjEwMXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral");
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+.app-sky-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(1px);
+  -webkit-backdrop-filter: blur(1px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.app-sky-bg > :not(.fixed) {
+  position: relative;
+  z-index: 1;
+}
+
 * {
   font-family: inherit;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
 }
 
 /* :root {

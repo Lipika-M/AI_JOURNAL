@@ -56,7 +56,7 @@ const getHuggingFaceSentiment = async (content) => {
 };
 
 const getGroqSummary = async (content) => {
-  const prompt = `Summarize the journal entry in 50 words or fewer. Return plain text only.\n\nJournal:\n"""${content}"""`;
+  const prompt = `Summarize the journal entry in 100 words or fewer as if talking to the user . Return plain text only.\n\nJournal:\n"""${content}"""`;
 
   const response = await fetch(GROQ_API_URL, {
     method: "POST",
