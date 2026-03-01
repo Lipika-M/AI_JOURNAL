@@ -120,7 +120,7 @@ const Register = () => {
         <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-lg p-8 border border-white/60">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-serif text-gray-800 mb-2">
+            <h1 className="text-4xl font-serif bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
               Solace
             </h1>
             <p className="text-gray-600 italic">Create your account to get started</p>

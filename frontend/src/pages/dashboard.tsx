@@ -30,6 +30,19 @@ const Dashboard = () => {
     []
   );
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
+  const [hoveredMoodPointIndex, setHoveredMoodPointIndex] = useState<number | null>(null);
+  const [moodTooltip, setMoodTooltip] = useState<{
+    x: number;
+    y: number;
+    label: string;
+    value: number;
+  } | null>(null);
+  const [sentimentTooltip, setSentimentTooltip] = useState<{
+    x: number;
+    y: number;
+    label: string;
+    value: number;
+  } | null>(null);
 
   useEffect(() => {
     fetchJournals();
@@ -153,18 +166,20 @@ const getSentimentColor = (sentiment?: string) => {
   );
 
   return (
-    <div className="app-sky-bg min-h-screen">
+    <div className="app-sky-bg dashboard-bg min-h-screen">
+      <div className="dashboard-overlay absolute inset-0 bg-white/30 backdrop-blur-[1px] pointer-events-none"></div>
+
       {/* Navigation Bar */}
       <nav className="bg-white/70 backdrop-blur-md border-b border-white/60 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg flex items-center justify-center shadow-sm shadow-purple-200/50">
+              <div className="w-9 h-9 bg-gradient-to-br from-blue-400/90 to-purple-400/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg shadow-purple-300/40">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Solace</h1>
+              <h1 className="text-2xl font-semibold  ">Solace</h1>
             </div>
             <div className="flex items-center gap-6">
               <span className="text-sm text-gray-600">{journals.length} {journals.length === 1 ? 'entry' : 'entries'}</span>
@@ -193,7 +208,7 @@ const getSentimentColor = (sentiment?: string) => {
             </div>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 flex items-center gap-2"
+              className="bg-gradient-to-r from-blue-400/90 to-purple-400/90 backdrop-blur-sm hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-300/40 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -211,7 +226,7 @@ const getSentimentColor = (sentiment?: string) => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-5 pr-14 py-3.5 bg-white/70 backdrop-blur-md border border-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm shadow-sm transition-all"
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl flex items-center justify-center transition-all duration-300">
+            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-400/90 to-purple-400/90 backdrop-blur-sm hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-300/40 rounded-xl flex items-center justify-center transition-all duration-300">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -277,7 +292,7 @@ const getSentimentColor = (sentiment?: string) => {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900">Mood Trends</h3>
                 </div>
-                <div className="h-80 px-2">
+                <div className="h-80 px-2 relative">
                   <svg viewBox="0 0 1000 350" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
                       {/* Y-Axis */}
                       <line x1="70" y1="30" x2="70" y2="300" stroke="#d1d5db" strokeWidth="1.5" />
@@ -326,8 +341,8 @@ const getSentimentColor = (sentiment?: string) => {
                       {/* Line Chart */}
                       <polyline
                         fill="none"
-                        stroke="#3b82f6"
-                        strokeWidth="2.5"
+                        stroke="#8b5cf6"
+                        strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         points={
@@ -349,13 +364,79 @@ const getSentimentColor = (sentiment?: string) => {
                         const x = 70 + (index / Math.max(1, totalPoints - 1)) * 900;
                         const value = Math.max(0, Math.min(1, point.averageScore || 0));
                         const y = 300 - value * 260;
+                        let label = "";
+                        if (point.date) {
+                          const date = new Date(point.date);
+                          if (!isNaN(date.getTime())) {
+                            label = date.toLocaleDateString("en-US", {
+                              month: "short",
+                              day: "numeric",
+                            });
+                          } else {
+                            label = point.date.split("-").slice(1).join("/");
+                          }
+                        } else {
+                          label = `Day ${index + 1}`;
+                        }
                         return (
                           <g key={`point-${index}`}>
-                            <circle cx={x} cy={y} r="4.5" fill="#3b82f6" stroke="white" strokeWidth="2" />
+                            <circle
+                              cx={x}
+                              cy={y}
+                              r={hoveredMoodPointIndex === index ? 6 : 4}
+                              fill="#3b82f6"
+                              stroke="white"
+                              strokeWidth="2"
+                              onMouseEnter={(event) => {
+                                const svgRect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+                                if (!svgRect) return;
+                                setHoveredMoodPointIndex(index);
+                                setMoodTooltip({
+                                  x: event.clientX - svgRect.left,
+                                  y: event.clientY - svgRect.top - 12,
+                                  label,
+                                  value: Math.round(value * 100),
+                                });
+                              }}
+                              onMouseMove={(event) => {
+                                const svgRect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
+                                if (!svgRect) return;
+                                setMoodTooltip((prev) =>
+                                  prev
+                                    ? {
+                                        ...prev,
+                                        x: event.clientX - svgRect.left,
+                                        y: event.clientY - svgRect.top - 12,
+                                      }
+                                    : prev
+                                );
+                              }}
+                              onMouseLeave={() => {
+                                setHoveredMoodPointIndex(null);
+                                setMoodTooltip(null);
+                              }}
+                            />
                           </g>
                         );
                       })}
                     </svg>
+                    {moodTooltip && (
+                      <div
+                        className="absolute pointer-events-none z-20"
+                        style={{
+                          left: moodTooltip.x,
+                          top: moodTooltip.y,
+                          transform: "translate(-50%, -110%)",
+                          backgroundColor: "rgba(255, 255, 255, 0.95)",
+                          border: "1px solid rgba(148, 163, 184, 0.3)",
+                          borderRadius: "12px",
+                          padding: "8px 12px",
+                        }}
+                      >
+                        <div style={{ color: "#334155", fontWeight: 500 }}>{moodTooltip.label}</div>
+                        <div className="text-sm text-slate-600">Mood: {moodTooltip.value}%</div>
+                      </div>
+                    )}
                 </div>
               </div>
             )}
@@ -389,7 +470,7 @@ const getSentimentColor = (sentiment?: string) => {
                       </div>
                       
                       {/* Chart area with axes */}
-                      <div className="flex-1 border-l-2 border-b-2 border-gray-300 relative" style={{ height: '220px' }}>
+                      <div className="flex-1 border-l-2 border-b-2 border-gray-300 relative" style={{ height: '220px' }} data-sentiment-chart>
                         {/* Grid lines */}
                         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
                           {[0, 1, 2, 3, 4].map((i) => (
@@ -408,8 +489,38 @@ const getSentimentColor = (sentiment?: string) => {
                                 {/* Bar */}
                                 <div className="w-full relative" style={{ height: '200px' }}>
                                   <div 
-                                    className={`absolute bottom-0 w-full rounded-t-md ${getSentimentBarColor(item.sentiment)} transition-all duration-500`}
-                                    style={{ height: `${Math.max(heightPercent, heightPercent > 0 ? 10 : 0)}%` }}
+                                    className={`absolute bottom-0 w-full ${getSentimentBarColor(item.sentiment)} transition-all duration-500`}
+                                    style={{
+                                      height: `${Math.max(heightPercent, heightPercent > 0 ? 10 : 0)}%`,
+                                      borderTopLeftRadius: "8px",
+                                      borderTopRightRadius: "8px",
+                                    }}
+                                    onMouseEnter={(event) => {
+                                      const chartContainer = event.currentTarget.closest("[data-sentiment-chart]") as HTMLDivElement | null;
+                                      const chartRect = chartContainer?.getBoundingClientRect();
+                                      if (!chartRect) return;
+                                      setSentimentTooltip({
+                                        x: event.clientX - chartRect.left,
+                                        y: event.clientY - chartRect.top - 12,
+                                        label: item.sentiment,
+                                        value: item.count,
+                                      });
+                                    }}
+                                    onMouseMove={(event) => {
+                                      const chartContainer = event.currentTarget.closest("[data-sentiment-chart]") as HTMLDivElement | null;
+                                      const chartRect = chartContainer?.getBoundingClientRect();
+                                      if (!chartRect) return;
+                                      setSentimentTooltip((prev) =>
+                                        prev
+                                          ? {
+                                              ...prev,
+                                              x: event.clientX - chartRect.left,
+                                              y: event.clientY - chartRect.top - 12,
+                                            }
+                                          : prev
+                                      );
+                                    }}
+                                    onMouseLeave={() => setSentimentTooltip(null)}
                                   ></div>
                                 </div>
                               </div>
@@ -425,6 +536,23 @@ const getSentimentColor = (sentiment?: string) => {
                             </div>
                           ))}
                         </div>
+                        {sentimentTooltip && (
+                          <div
+                            className="absolute pointer-events-none z-20"
+                            style={{
+                              left: sentimentTooltip.x,
+                              top: sentimentTooltip.y,
+                              transform: "translate(-50%, -110%)",
+                              backgroundColor: "rgba(255, 255, 255, 0.95)",
+                              border: "1px solid rgba(148, 163, 184, 0.3)",
+                              borderRadius: "12px",
+                              padding: "8px 12px",
+                            }}
+                          >
+                            <div style={{ color: "#334155", fontWeight: 500 }} className="capitalize">{sentimentTooltip.label}</div>
+                            <div className="text-sm text-slate-600">Count: {sentimentTooltip.value}</div>
+                          </div>
+                        )}
                       </div>
                     </div>
                     
@@ -563,24 +691,27 @@ const getSentimentColor = (sentiment?: string) => {
           <>
             <h3 className="text-xl font-semibold text-gray-900 mb-8">Recent Entries</h3>
             <div className="relative">
-              {/* Timeline line - faded gradient */}
-              <div className="absolute left-8 top-20 bottom-0 w-0.5 bg-gradient-to-b from-blue-200 via-green-200 to-transparent"></div>
-              
               {/* Timeline items */}
               <div className="space-y-6">
-                {filteredJournals.map((journal) => {
+                {filteredJournals.map((journal, index) => {
                   const date = journal.createdAt ? new Date(journal.createdAt) : new Date();
                   const monthShort = date.toLocaleDateString('en-US', { month: 'short' });
                   const day = date.getDate();
                   
                   return (
-                    <div key={journal._id} className="flex gap-6">
-                      {/* Date Circle */}
-                      <div className="flex flex-col items-center pt-1 relative z-10">
-                          <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex flex-col items-center justify-center shadow-lg shadow-purple-200/50 relative z-10">
-                          <div className="text-xs font-light text-white">{monthShort}</div>
-                          <div className="text-lg font-semibold leading-tight text-white">{day}</div>
+                    <div key={journal._id} className="relative flex gap-6">
+                      {/* Timeline Connector */}
+                      {index !== filteredJournals.length - 1 && (
+                        <div className="absolute left-8 top-20 bottom-0 w-0.5 bg-gradient-to-b from-blue-200/60 via-purple-200/60 to-transparent hidden md:block" />
+                      )}
 
+                      {/* Date Circle */}
+                      <div className="hidden md:flex flex-col items-center flex-shrink-0">
+                        <div className="w-16 h-16 bg-gradient-to-br from-blue-400/90 to-purple-400/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg relative z-10">
+                          <div className="text-center text-white">
+                            <div className="text-xs font-light opacity-90">{monthShort}</div>
+                            <div className="text-lg font-semibold leading-tight">{day}</div>
+                          </div>
                         </div>
                       </div>
                       

@@ -7,6 +7,7 @@
 
 body {
   font-family: "Poppins", sans-serif;
+  color: rgb(17 24 39);
 }
 
 .app-sky-bg {
@@ -16,6 +17,14 @@ body {
   background-size: cover;
   background-repeat: no-repeat;
   background-attachment: fixed;
+}
+
+.dashboard-bg {
+  background-image: url("https://res.cloudinary.com/lipika/image/upload/v1772373436/photo-1695062536685-21759fbed347_lufjeo.jpg");
+}
+
+.dashboard-bg::before {
+  display: none;
 }
 
 .app-sky-bg::before {
@@ -34,12 +43,52 @@ body {
   z-index: 1;
 }
 
+.app-sky-bg > .dashboard-overlay {
+  position: absolute;
+  z-index: 0;
+}
+
 * {
   font-family: inherit;
 }
 
 button:not(:disabled) {
   cursor: pointer;
+}
+
+.app-sky-bg .text-gray-500 {
+  color: rgb(55 65 81);
+}
+
+.app-sky-bg .text-gray-600,
+.app-sky-bg .text-slate-600 {
+  color: rgb(17 24 39);
+}
+
+.app-sky-bg .text-gray-700,
+.app-sky-bg .text-gray-800,
+.app-sky-bg .text-gray-900 {
+  color: rgb(3 7 18);
+}
+
+.app-sky-bg .text-xs {
+  font-size: 0.86rem;
+}
+
+.app-sky-bg .text-sm {
+  font-size: 1rem;
+}
+
+.app-sky-bg .text-base {
+  font-size: 1.12rem;
+}
+
+.app-sky-bg .text-lg {
+  font-size: 1.22rem;
+}
+
+.app-sky-bg .text-xl {
+  font-size: 1.36rem;
 }
 
 /* :root {
