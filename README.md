@@ -22,7 +22,7 @@
 
 ## 🎯 Overview
 
-AI Journal is a full-stack web application that allows users to create, manage, and analyze their journal entries using artificial intelligence. The application integrates with OpenAI's GPT-4 to provide sentiment analysis, mood tracking, and intelligent summaries of journal content.
+AI Journal is a full-stack web application that allows users to create, manage, and analyze their journal entries using artificial intelligence. The application integrates with Hugging Face and Groq to provide sentiment analysis, mood tracking, and intelligent summaries of journal content.
 
 Whether you're looking to reflect on your daily experiences or track your emotional journey over time, AI Journal provides the tools to better understand yourself through data-driven insights.
 
@@ -32,8 +32,10 @@ Whether you're looking to reflect on your daily experiences or track your emotio
 
 - **User Authentication**: Secure registration and login with JWT-based authentication
 - **Journal Entry Management**: Create, read, update, and delete personal journal entries
-- **AI-Powered Analysis**: Automatic sentiment analysis and mood tracking using OpenAI's GPT-4
-- **Analytics Dashboard**: View comprehensive insights including mood trends and emotional patterns
+- **AI-Powered Analysis**: Automatic sentiment, mood score, and summary generation using Hugging Face + Groq
+- **AI Re-analysis on Update**: When journal content is updated, AI summary/sentiment/mood score are recalculated
+- **Analytics Dashboard**: Mood trends, sentiment distribution, tag distribution, and average mood by tag
+- **Smart Search Experience**: Search journals by title, content, and tags with focused search-only results view
 - **Responsive Design**: Modern, user-friendly interface built with React and TypeScript
 - **RESTful API**: Well-documented REST endpoints for all operations
 - **Secure & Validated**: Input validation with Zod and password encryption with bcrypt
@@ -49,7 +51,7 @@ Whether you're looking to reflect on your daily experiences or track your emotio
 - **Authentication**: JWT (JSON Web Tokens)
 - **Validation**: Zod
 - **Security**: bcrypt for password hashing
-- **AI Integration**: OpenAI API (GPT-4)
+- **AI Integration**: Hugging Face Inference API + Groq API
 - **Development**: Nodemon, Prettier
 
 ### Frontend
@@ -67,10 +69,11 @@ Whether you're looking to reflect on your daily experiences or track your emotio
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** (v16 or higher)
+- **Node.js** (v18 or higher)
 - **npm** or **yarn**
 - **MongoDB** (local or Atlas cloud instance)
-- **OpenAI API Key** (for AI analysis features)
+- **Hugging Face API Key** (for sentiment analysis)
+- **Groq API Key** (for summary generation)
 
 ---
 
@@ -111,19 +114,26 @@ PORT=5000
 NODE_ENV=development
 
 # Database Configuration
-MONGODB_URI=mongodb://localhost:27017/ai_journal
+MONGODB_URI=mongodb://localhost:27017
 # Or use MongoDB Atlas:
-# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/ai_journal
+# MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net
 
 # JWT Configuration
-JWT_SECRET=your_jwt_secret_key_here
-JWT_EXPIRE=7d
+ACCESS_TOKEN_SECRET=your_access_token_secret
+ACCESS_TOKEN_EXPIRY=1d
+REFRESH_TOKEN_SECRET=your_refresh_token_secret
+REFRESH_TOKEN_EXPIRY=7d
 
 # CORS Configuration
 CORS_ORIGIN=http://localhost:5173
 
-# OpenAI Configuration
-OPENAI_API_KEY=your_openai_api_key_here
+# AI Configuration
+HUGGINGFACE_API_KEY=your_huggingface_api_key
+GROQ_API_KEY=your_groq_api_key
+
+# Optional model overrides
+# HUGGINGFACE_MODEL=cardiffnlp/twitter-roberta-base-sentiment-latest
+# GROQ_MODEL=llama-3.1-8b-instant
 ```
 
 ### Frontend Environment Variables
@@ -204,12 +214,14 @@ AI_JOURNAL/
 ├── frontend/
 │   ├── src/
 │   │   ├── components/         # React components
-│   │   │   └── navbar.tsx
+│   │   │   ├── navbar.tsx
+│   │   │   └── journalEditorModal.tsx
 │   │   ├── pages/              # Page components
 │   │   │   ├── login.tsx
 │   │   │   ├── register.tsx
 │   │   │   ├── dashboard.tsx
-│   │   │   ├── newJournal.tsx
+│   │   │   ├── journalDetail.tsx
+│   │   │   ├── landingPage.tsx
 │   │   │   └── notFound.tsx
 │   │   ├── context/            # React context (state management)
 │   │   │   ├── authContext.tsx
@@ -249,7 +261,10 @@ AI_JOURNAL/
 POST   /api/v1/users/register       - Register a new user
 POST   /api/v1/users/login          - Login with credentials
 POST   /api/v1/users/logout         - Logout current user
-POST   /api/v1/users/refresh        - Refresh authentication token
+POST   /api/v1/users/refresh-token  - Refresh authentication token
+GET    /api/v1/users/me             - Get current user profile
+POST   /api/v1/users/change-password- Update current user password
+POST   /api/v1/users/update-account - Update account details
 ```
 
 ### Journal Endpoints
@@ -265,9 +280,10 @@ DELETE /api/v1/journals/:id         - Delete a journal entry
 ### Analytics Endpoints
 
 ```
-GET    /api/v1/analytics            - Get analytics summary
-GET    /api/v1/analytics/mood       - Get mood trends
-GET    /api/v1/analytics/insights   - Get AI-generated insights
+GET    /api/v1/analytics/mood-trends            - Get mood trends
+GET    /api/v1/analytics/sentiment-distribution - Get sentiment distribution
+GET    /api/v1/analytics/tags-distribution      - Get top tags distribution
+GET    /api/v1/analytics/average-mood-by-tag    - Get average mood grouped by tag
 ```
 
 > For detailed API documentation, see the individual router files in `backend/src/routers/`
