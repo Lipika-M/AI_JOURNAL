@@ -11,6 +11,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getAuthErrorMessage = (err: unknown, fallback: string) => {
+    const axiosLikeError = err as {
+      response?: { status?: number; data?: { message?: string } };
+      message?: string;
+    };
+
+    const statusCode = axiosLikeError?.response?.status;
+    const serverMessage = axiosLikeError?.response?.data?.message?.trim();
+    const rawMessage = axiosLikeError?.message?.trim();
+
+    if (serverMessage && !/status code\s*\d+/i.test(serverMessage)) {
+      return serverMessage;
+    }
+
+    if (statusCode === 400) return "Please check your input and try again.";
+    if (statusCode === 401) return "Invalid credentials. Please try again.";
+    if (statusCode === 403) return "You are not allowed to perform this action.";
+    if (statusCode === 404) return "Account not found.";
+    if (statusCode === 409) return "This account information is already in use.";
+    if (statusCode === 429) return "Too many attempts. Please wait and try again.";
+    if (statusCode && statusCode >= 500)
+      return "Server error. Please try again in a moment.";
+
+    if (rawMessage && !/status code\s*\d+/i.test(rawMessage)) {
+      return rawMessage;
+    }
+
+    return fallback;
+  };
+
    useEffect(() => {
     const checkAuth = async () => {
        try {
@@ -51,10 +81,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(response.message || "Registration failed");
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Registration failed";
+      const errorMessage = getAuthErrorMessage(
+        err,
+        "Registration failed. Please try again."
+      );
       setError(errorMessage);
-      throw err;
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -76,10 +108,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(response.message || "Login failed");
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Login failed";
+      const errorMessage = getAuthErrorMessage(
+        err,
+        "Login failed. Please try again."
+      );
       setError(errorMessage);
-      throw err;
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -93,10 +127,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
       setIsAuthenticated(false);
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : "Logout failed";
+      const errorMessage = getAuthErrorMessage(
+        err,
+        "Logout failed. Please try again."
+      );
       setError(errorMessage);
-      throw err;
+      throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
     }

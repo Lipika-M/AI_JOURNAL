@@ -30,18 +30,26 @@ const Dashboard = () => {
     []
   );
   const [isAnalyticsLoading, setIsAnalyticsLoading] = useState(true);
-  const [hoveredMoodPointIndex, setHoveredMoodPointIndex] = useState<number | null>(null);
-  const [moodTooltip, setMoodTooltip] = useState<{
+  const [hoveredMoodPoint, setHoveredMoodPoint] = useState<{
+    index: number;
     x: number;
     y: number;
     label: string;
     value: number;
   } | null>(null);
-  const [sentimentTooltip, setSentimentTooltip] = useState<{
+  const [moodTooltipPosition, setMoodTooltipPosition] = useState<{
     x: number;
     y: number;
-    label: string;
-    value: number;
+  } | null>(null);
+  const [hoveredSentiment, setHoveredSentiment] = useState<{
+    index: number;
+    sentiment: string;
+    count: number;
+    percent: number;
+  } | null>(null);
+  const [sentimentTooltipPosition, setSentimentTooltipPosition] = useState<{
+    x: number;
+    y: number;
   } | null>(null);
 
   useEffect(() => {
@@ -121,7 +129,8 @@ const Dashboard = () => {
     try {
       await logout();
       navigate("/login");
-    } catch (err) {
+    } catch (err: any) {
+      setError(err?.message || "Logout failed. Please try again.");
       console.error("Logout error:", err);
     }
   };
@@ -155,6 +164,13 @@ const getSentimentColor = (sentiment?: string) => {
     (sum, item) => sum + item.count,
     0
   );
+  const maxSentimentCount = Math.max(
+    1,
+    ...sentimentDistribution.map((item) => item.count)
+  );
+  const sentimentYAxisTicks = Array.from({ length: 5 }, (_, index) =>
+    (maxSentimentCount / 4) * index
+  );
 
   const topTagsByMood = [...averageMoodByTag]
     .sort((a, b) => b.averageMood - a.averageMood)
@@ -162,8 +178,139 @@ const getSentimentColor = (sentiment?: string) => {
 
   const filteredJournals = journals.filter((journal) =>
     journal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    journal.content.toLowerCase().includes(searchQuery.toLowerCase())
+    journal.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (journal.tags || []).some((tag) =>
+      tag.toLowerCase().includes(searchQuery.toLowerCase())
+    )
   );
+  const isSearching = searchQuery.trim().length > 0;
+
+  const getMoodPointMeta = (index: number) => {
+    const totalPoints = moodTrends.length;
+    const point = moodTrends[index];
+    const x = 70 + (index / Math.max(1, totalPoints - 1)) * 900;
+    const value = Math.max(0, Math.min(1, point?.averageScore || 0));
+    const y = 300 - value * 260;
+    const date = point?.date ? new Date(point.date) : null;
+    const label =
+      date && !isNaN(date.getTime())
+        ? date.toLocaleDateString("en-US", { month: "short", day: "numeric" })
+        : point?.date || `Day ${index + 1}`;
+
+    return {
+      index,
+      x,
+      y,
+      label,
+      value: Math.round(value * 100),
+    };
+  };
+
+  const getMoodChartPoints = () =>
+    moodTrends.map((point, index) => {
+      const totalPoints = moodTrends.length;
+      const x = 70 + (index / Math.max(1, totalPoints - 1)) * 900;
+      const value = Math.max(0, Math.min(1, point.averageScore || 0));
+      const y = 300 - value * 260;
+      return { x, y };
+    });
+
+  const buildSmoothMoodPath = (points: Array<{ x: number; y: number }>) => {
+    if (points.length === 0) return "";
+    if (points.length === 1) return `M ${points[0].x} ${points[0].y}`;
+
+    let path = `M ${points[0].x} ${points[0].y}`;
+
+    for (let index = 1; index < points.length; index += 1) {
+      const previous = points[index - 1];
+      const current = points[index];
+      const controlX = (previous.x + current.x) / 2;
+
+      path += ` C ${controlX} ${previous.y}, ${controlX} ${current.y}, ${current.x} ${current.y}`;
+    }
+
+    return path;
+  };
+
+  const handleMoodChartMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+    if (!moodTrends.length) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const svgX = ((event.clientX - rect.left) / rect.width) * 1000;
+    const svgY = ((event.clientY - rect.top) / rect.height) * 350;
+    const clampedX = Math.min(915, Math.max(85, svgX));
+    const clampedY = Math.min(280, Math.max(50, svgY));
+
+    setMoodTooltipPosition({ x: clampedX, y: clampedY });
+
+    let closestIndex = 0;
+    let closestDistance = Number.POSITIVE_INFINITY;
+
+    for (let index = 0; index < moodTrends.length; index += 1) {
+      const pointX = 70 + (index / Math.max(1, moodTrends.length - 1)) * 900;
+      const distance = Math.abs(svgX - pointX);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestIndex = index;
+      }
+    }
+
+    const nextPoint = getMoodPointMeta(closestIndex);
+    setHoveredMoodPoint((prev) =>
+      prev?.index === nextPoint.index ? prev : nextPoint
+    );
+  };
+
+  const handleSentimentChartMouseMove = (
+    event: React.MouseEvent<HTMLDivElement>
+  ) => {
+    if (!sentimentDistribution.length) return;
+
+    const rect = event.currentTarget.getBoundingClientRect();
+    const relativeX = Math.min(
+      rect.width,
+      Math.max(0, event.clientX - rect.left)
+    );
+    const relativeY = Math.min(
+      rect.height,
+      Math.max(0, event.clientY - rect.top)
+    );
+
+    const horizontalPadding = 24;
+    const usableWidth = Math.max(1, rect.width - horizontalPadding * 2);
+    const innerX = Math.min(
+      usableWidth,
+      Math.max(0, relativeX - horizontalPadding)
+    );
+    const bucketWidth = usableWidth / Math.max(1, sentimentDistribution.length);
+    const index = Math.min(
+      sentimentDistribution.length - 1,
+      Math.max(0, Math.floor(innerX / Math.max(1, bucketWidth)))
+    );
+
+    const item = sentimentDistribution[index];
+    const percent = sentimentTotal
+      ? Math.round((item.count / sentimentTotal) * 100)
+      : 0;
+
+    setHoveredSentiment((prev) =>
+      prev?.index === index
+        ? prev
+        : {
+            index,
+            sentiment: item.sentiment,
+            count: item.count,
+            percent,
+          }
+    );
+
+    setSentimentTooltipPosition({
+      x: Math.min(94, Math.max(6, (relativeX / Math.max(1, rect.width)) * 100)),
+      y: Math.min(80, Math.max(20, (relativeY / Math.max(1, rect.height)) * 100)),
+    });
+  };
+
+  const moodChartPoints = getMoodChartPoints();
 
   return (
     <div className="app-sky-bg dashboard-bg min-h-screen">
@@ -279,21 +426,30 @@ const getSentimentColor = (sentiment?: string) => {
         )}
 
         {/* Analytics Section */}
-        {!isAnalyticsLoading && (moodTrends.length > 0 || sentimentDistribution.length > 0) && (
+        {!isSearching && !isAnalyticsLoading && (moodTrends.length > 0 || sentimentDistribution.length > 0) && (
           <section className="mb-12">
             {/* Mood Trends Chart - Full Width */}
             {moodTrends.length > 0 && (
-              <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 mb-6">
+              <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 p-8 mb-6">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400/80 to-purple-400/80 rounded-lg flex items-center justify-center shadow-md">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">Mood Trends</h3>
+                  <h3 className="text-lg font-semibold text-slate-800">Mood Trends</h3>
                 </div>
                 <div className="h-80 px-2 relative">
-                  <svg viewBox="0 0 1000 350" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+                  <svg
+                    viewBox="0 0 1000 350"
+                    className="w-full h-full"
+                    preserveAspectRatio="xMidYMid meet"
+                    onMouseMove={handleMoodChartMouseMove}
+                    onMouseLeave={() => {
+                      setHoveredMoodPoint(null);
+                      setMoodTooltipPosition(null);
+                    }}
+                  >
                       {/* Y-Axis */}
                       <line x1="70" y1="30" x2="70" y2="300" stroke="#d1d5db" strokeWidth="1.5" />
                       
@@ -305,8 +461,8 @@ const getSentimentColor = (sentiment?: string) => {
                         const y = 300 - (value / 100) * 260;
                         return (
                           <g key={`grid-${value}`}>
-                            <line x1="75" y1={y} x2="970" y2={y} stroke="#e5e7eb" strokeWidth="1" strokeDasharray="3,3" />
-                            <text x="55" y={y + 4} fontSize="12" fill="#9ca3af" textAnchor="end">
+                            <line x1="75" y1={y} x2="970" y2={y} stroke="#94a3b8" strokeWidth="1" strokeDasharray="3,3" strokeOpacity="0.2" />
+                            <text x="55" y={y + 4} fontSize="12" fill="#64748b" textAnchor="end">
                               {value}
                             </text>
                           </g>
@@ -332,109 +488,69 @@ const getSentimentColor = (sentiment?: string) => {
                         }
                         
                         return (
-                          <text key={`label-${index}`} x={x} y="330" fontSize="11" fill="#9ca3af" textAnchor="middle">
+                          <text key={`label-${index}`} x={x} y="330" fontSize="12" fill="#64748b" textAnchor="middle">
                             {label}
                           </text>
                         );
                       })}
                       
                       {/* Line Chart */}
-                      <polyline
+                      <path
+                        d={buildSmoothMoodPath(moodChartPoints)}
                         fill="none"
                         stroke="#8b5cf6"
                         strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        points={
-                          moodTrends
-                            .map((point, index) => {
-                              const totalPoints = moodTrends.length;
-                              const x = 70 + (index / Math.max(1, totalPoints - 1)) * 900;
-                              const value = Math.max(0, Math.min(1, point.averageScore || 0));
-                              const y = 300 - value * 260;
-                              return `${x},${y}`;
-                            })
-                            .join(" ")
-                        }
                       />
+
+                      {hoveredMoodPoint && (
+                        <line
+                          x1={hoveredMoodPoint.x}
+                          y1="30"
+                          x2={hoveredMoodPoint.x}
+                          y2="300"
+                          stroke="#8b5cf6"
+                          strokeWidth="1.5"
+                          strokeDasharray="4,4"
+                          opacity="0.75"
+                          style={{ transition: "all 180ms ease-out" }}
+                        />
+                      )}
                       
                       {/* Data Points */}
-                      {moodTrends.map((point, index) => {
-                        const totalPoints = moodTrends.length;
-                        const x = 70 + (index / Math.max(1, totalPoints - 1)) * 900;
-                        const value = Math.max(0, Math.min(1, point.averageScore || 0));
-                        const y = 300 - value * 260;
-                        let label = "";
-                        if (point.date) {
-                          const date = new Date(point.date);
-                          if (!isNaN(date.getTime())) {
-                            label = date.toLocaleDateString("en-US", {
-                              month: "short",
-                              day: "numeric",
-                            });
-                          } else {
-                            label = point.date.split("-").slice(1).join("/");
-                          }
-                        } else {
-                          label = `Day ${index + 1}`;
-                        }
+                      {moodTrends.map((_, index) => {
+                        const { x, y } = getMoodPointMeta(index);
                         return (
                           <g key={`point-${index}`}>
                             <circle
                               cx={x}
                               cy={y}
-                              r={hoveredMoodPointIndex === index ? 6 : 4}
+                              r={hoveredMoodPoint?.index === index ? "6" : "4"}
                               fill="#3b82f6"
                               stroke="white"
                               strokeWidth="2"
-                              onMouseEnter={(event) => {
-                                const svgRect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
-                                if (!svgRect) return;
-                                setHoveredMoodPointIndex(index);
-                                setMoodTooltip({
-                                  x: event.clientX - svgRect.left,
-                                  y: event.clientY - svgRect.top - 12,
-                                  label,
-                                  value: Math.round(value * 100),
-                                });
-                              }}
-                              onMouseMove={(event) => {
-                                const svgRect = event.currentTarget.ownerSVGElement?.getBoundingClientRect();
-                                if (!svgRect) return;
-                                setMoodTooltip((prev) =>
-                                  prev
-                                    ? {
-                                        ...prev,
-                                        x: event.clientX - svgRect.left,
-                                        y: event.clientY - svgRect.top - 12,
-                                      }
-                                    : prev
-                                );
-                              }}
-                              onMouseLeave={() => {
-                                setHoveredMoodPointIndex(null);
-                                setMoodTooltip(null);
-                              }}
+                              className="transition-all duration-200"
                             />
                           </g>
                         );
                       })}
                     </svg>
-                    {moodTooltip && (
+
+                    {hoveredMoodPoint && (
                       <div
-                        className="absolute pointer-events-none z-20"
+                        className="absolute pointer-events-none z-10 -translate-x-1/2 -translate-y-[120%] bg-white/95 border border-slate-300/30 rounded-xl px-3 py-2 shadow-sm transition-all duration-300 ease-out"
                         style={{
-                          left: moodTooltip.x,
-                          top: moodTooltip.y,
-                          transform: "translate(-50%, -110%)",
-                          backgroundColor: "rgba(255, 255, 255, 0.95)",
-                          border: "1px solid rgba(148, 163, 184, 0.3)",
-                          borderRadius: "12px",
-                          padding: "8px 12px",
+                          left: `${((moodTooltipPosition?.x ?? hoveredMoodPoint.x) / 1000) * 100}%`,
+                          top: `${((moodTooltipPosition?.y ?? hoveredMoodPoint.y) / 350) * 100}%`,
                         }}
                       >
-                        <div style={{ color: "#334155", fontWeight: 500 }}>{moodTooltip.label}</div>
-                        <div className="text-sm text-slate-600">Mood: {moodTooltip.value}%</div>
+                        <div className="text-slate-700 font-medium text-sm whitespace-nowrap">
+                          {hoveredMoodPoint.label}
+                        </div>
+                        <div className="text-purple-600 font-medium text-xs whitespace-nowrap">
+                          Mood: {hoveredMoodPoint.value}%
+                        </div>
                       </div>
                     )}
                 </div>
@@ -448,8 +564,8 @@ const getSentimentColor = (sentiment?: string) => {
               {sentimentDistribution.length > 0 && (
                 <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 h-full min-h-[520px] flex flex-col">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                       </svg>
                     </div>
@@ -462,65 +578,77 @@ const getSentimentColor = (sentiment?: string) => {
                     <div className="flex gap-4">
                       {/* Y-axis labels */}
                       <div className="flex flex-col-reverse justify-between text-xs text-gray-500" style={{ height: '220px', width: '40px' }}>
-                        {[0, 0.75, 1.5, 2.25, 3].map((val) => (
+                        {sentimentYAxisTicks.map((val) => (
                           <div key={val} className="text-right pr-3">
-                            {val}
+                            {Number.isInteger(val) ? val : val.toFixed(2)}
                           </div>
                         ))}
                       </div>
                       
                       {/* Chart area with axes */}
-                      <div className="flex-1 border-l-2 border-b-2 border-gray-300 relative" style={{ height: '220px' }} data-sentiment-chart>
+                      <div
+                        className="flex-1 border-l-2 border-b-2 border-gray-300 relative"
+                        style={{ height: '220px' }}
+                        onMouseMove={handleSentimentChartMouseMove}
+                        onMouseLeave={() => {
+                          setHoveredSentiment(null);
+                          setSentimentTooltipPosition(null);
+                        }}
+                      >
                         {/* Grid lines */}
                         <div className="absolute inset-0 flex flex-col justify-between pointer-events-none">
-                          {[0, 1, 2, 3, 4].map((i) => (
-                            <div key={i} className="border-t border-gray-200"></div>
+                          {sentimentYAxisTicks.map((_, i) => (
+                            <div key={i} className="border-t border-slate-400/20 border-dashed"></div>
                           ))}
                         </div>
+
+                        {hoveredSentiment && (
+                          <div
+                            className="absolute top-0 bottom-0 bg-slate-400/30 pointer-events-none z-[1]"
+                            style={{
+                              left: `calc(24px + ${hoveredSentiment.index} * ((100% - 48px) / ${Math.max(1, sentimentDistribution.length)}))`,
+                              width: `calc((100% - 48px) / ${Math.max(1, sentimentDistribution.length)})`,
+                            }}
+                          />
+                        )}
+
+                        {hoveredSentiment && sentimentTooltipPosition && (
+                          <div
+                            className="absolute pointer-events-none z-20 -translate-x-1/2 -translate-y-[130%] bg-white/95 border border-slate-300/30 rounded-xl px-3 py-2 shadow-sm transition-all duration-500 ease-out whitespace-nowrap"
+                            style={{
+                              left: `${sentimentTooltipPosition.x}%`,
+                              top: `${sentimentTooltipPosition.y}%`,
+                            }}
+                          >
+                            <div className="text-slate-700 font-medium text-sm capitalize">
+                              {hoveredSentiment.sentiment}
+                            </div>
+                            <div className="text-slate-600 text-xs">
+                              {hoveredSentiment.count} entries ({hoveredSentiment.percent}%)
+                            </div>
+                          </div>
+                        )}
                         
                         {/* Bars */}
-                        <div className="relative h-full flex items-end justify-around gap-8 px-6">
-                          {sentimentDistribution.map((item) => {
-                            const maxCount = Math.max(...sentimentDistribution.map(s => s.count));
-                            const heightPercent = maxCount > 0 ? (item.count / maxCount) * 100 : 0;
+                        <div
+                          className="relative h-full grid px-6"
+                          style={{
+                            gridTemplateColumns: `repeat(${Math.max(1, sentimentDistribution.length)}, minmax(0, 1fr))`,
+                          }}
+                        >
+                          {sentimentDistribution.map((item, index) => {
+                            const heightPercent = maxSentimentCount > 0 ? (item.count / maxSentimentCount) * 100 : 0;
+                            const isActive = hoveredSentiment?.index === index;
                             
                             return (
-                              <div key={item.sentiment} className="flex-1 flex flex-col items-center max-w-[140px]">
+                              <div key={item.sentiment} className="flex flex-col items-center">
                                 {/* Bar */}
-                                <div className="w-full relative" style={{ height: '200px' }}>
+                                <div
+                                  className="w-full h-full relative rounded-md transition-none px-2"
+                                >
                                   <div 
-                                    className={`absolute bottom-0 w-full ${getSentimentBarColor(item.sentiment)} transition-all duration-500`}
-                                    style={{
-                                      height: `${Math.max(heightPercent, heightPercent > 0 ? 10 : 0)}%`,
-                                      borderTopLeftRadius: "8px",
-                                      borderTopRightRadius: "8px",
-                                    }}
-                                    onMouseEnter={(event) => {
-                                      const chartContainer = event.currentTarget.closest("[data-sentiment-chart]") as HTMLDivElement | null;
-                                      const chartRect = chartContainer?.getBoundingClientRect();
-                                      if (!chartRect) return;
-                                      setSentimentTooltip({
-                                        x: event.clientX - chartRect.left,
-                                        y: event.clientY - chartRect.top - 12,
-                                        label: item.sentiment,
-                                        value: item.count,
-                                      });
-                                    }}
-                                    onMouseMove={(event) => {
-                                      const chartContainer = event.currentTarget.closest("[data-sentiment-chart]") as HTMLDivElement | null;
-                                      const chartRect = chartContainer?.getBoundingClientRect();
-                                      if (!chartRect) return;
-                                      setSentimentTooltip((prev) =>
-                                        prev
-                                          ? {
-                                              ...prev,
-                                              x: event.clientX - chartRect.left,
-                                              y: event.clientY - chartRect.top - 12,
-                                            }
-                                          : prev
-                                      );
-                                    }}
-                                    onMouseLeave={() => setSentimentTooltip(null)}
+                                    className={`absolute bottom-0 left-2 right-2 rounded-t-[8px] ${getSentimentBarColor(item.sentiment)} transition-all duration-500 ease-out ${isActive ? 'opacity-100 brightness-110' : 'opacity-90'}`}
+                                    style={{ height: `${heightPercent}%` }}
                                   ></div>
                                 </div>
                               </div>
@@ -536,34 +664,21 @@ const getSentimentColor = (sentiment?: string) => {
                             </div>
                           ))}
                         </div>
-                        {sentimentTooltip && (
-                          <div
-                            className="absolute pointer-events-none z-20"
-                            style={{
-                              left: sentimentTooltip.x,
-                              top: sentimentTooltip.y,
-                              transform: "translate(-50%, -110%)",
-                              backgroundColor: "rgba(255, 255, 255, 0.95)",
-                              border: "1px solid rgba(148, 163, 184, 0.3)",
-                              borderRadius: "12px",
-                              padding: "8px 12px",
-                            }}
-                          >
-                            <div style={{ color: "#334155", fontWeight: 500 }} className="capitalize">{sentimentTooltip.label}</div>
-                            <div className="text-sm text-slate-600">Count: {sentimentTooltip.value}</div>
-                          </div>
-                        )}
                       </div>
                     </div>
                     
                     {/* Percentage labels below chart */}
-                    <div className="flex justify-around px-12 pt-8">
+                    <div className="grid grid-cols-3 gap-5 px-6 pt-8">
                       {sentimentDistribution.map((item) => {
                         const totalPercent = sentimentTotal ? Math.round((item.count / sentimentTotal) * 100) : 0;
+                        const isActive = hoveredSentiment?.sentiment === item.sentiment;
                         return (
-                          <div key={item.sentiment} className="text-center">
-                            <div className="text-3xl font-bold text-gray-900 mb-1">{totalPercent}%</div>
-                            <div className="text-sm text-gray-600 capitalize">{item.sentiment}</div>
+                          <div
+                            key={item.sentiment}
+                            className={`w-full max-w-[150px] mx-auto text-center py-4 px-5 rounded-2xl bg-white/70 backdrop-blur-sm border border-white/50 transition-all duration-300 ${isActive ? 'shadow-sm ring-1 ring-purple-300/50' : ''}`}
+                          >
+                            <div className="text-2xl font-bold text-slate-800 leading-none">{totalPercent}%</div>
+                            <div className="text-[11px] text-slate-600 mt-2 capitalize">{item.sentiment}</div>
                           </div>
                         );
                       })}
@@ -575,8 +690,8 @@ const getSentimentColor = (sentiment?: string) => {
               {tagsDistribution.length > 0 && (
                 <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 h-full min-h-[520px] flex flex-col">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
+                      <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                     </div>
@@ -603,20 +718,20 @@ const getSentimentColor = (sentiment?: string) => {
             {topTagsByMood.length > 0 && (
               <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center shadow-sm">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900">Best Moods</h3>
+                  <h3 className="text-lg font-semibold text-slate-800">Best Moods</h3>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {topTagsByMood.map((tag) => (
-                    <div key={tag.tag} className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-4 border border-purple-200">
-                      <div className="text-3xl font-bold text-purple-600 mb-1">
+                    <div key={tag.tag} className="bg-white/70 rounded-xl p-4 border border-white/60">
+                      <div className="text-3xl font-bold text-blue-600 mb-1">
                         {Math.round(tag.averageMood * 100)}%
                       </div>
-                      <div className="text-sm text-gray-600 font-medium truncate">
+                      <div className="text-sm text-slate-700 font-medium truncate">
                         {tag.tag}
                       </div>
                     </div>
@@ -635,7 +750,7 @@ const getSentimentColor = (sentiment?: string) => {
         )}
 
         {/* Empty State */}
-        {!isLoading && journals.length === 0 && (
+        {!isSearching && !isLoading && journals.length === 0 && (
           <div className="text-center py-16">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-200 mb-4">
               <svg
@@ -664,7 +779,7 @@ const getSentimentColor = (sentiment?: string) => {
         )}
 
         {/* No Search Results */}
-        {!isLoading && journals.length > 0 && filteredJournals.length === 0 && (
+        {isSearching && !isLoading && journals.length > 0 && filteredJournals.length === 0 && (
           <div className="text-center py-16">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-stone-200 mb-4">
               <svg
@@ -689,7 +804,9 @@ const getSentimentColor = (sentiment?: string) => {
         {/* Journals Timeline */}
         {!isLoading && filteredJournals.length > 0 && (
           <>
-            <h3 className="text-xl font-semibold text-gray-900 mb-8">Recent Entries</h3>
+            <h3 className="text-xl font-semibold text-gray-900 mb-8">
+              {isSearching ? "Search Results" : "Recent Entries"}
+            </h3>
             <div className="relative">
               {/* Timeline items */}
               <div className="space-y-6">

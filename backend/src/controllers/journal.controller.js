@@ -38,15 +38,13 @@ const createJournal = asyncHandler(async (req, res) => {
         summary: aiResult.summary,
         aiStatus: "completed",
       });
-      console.log("AI Analysis completed successfully for journal:", journal._id);
+       
     })
     .catch(async (error) => {
       await Journal.findByIdAndUpdate(journal._id, {
         aiStatus: "failed",
       });
-      console.error("AI Analysis Error for journal:", journal._id);
-      console.error("Error message:", error.message);
-      console.error("Full Error:", error);
+      
     });
 });
 
@@ -59,7 +57,14 @@ const updateJournal = asyncHandler(async (req, res) => {
 
   const updateFields = {};
   if (title) updateFields.title = title.trim();
-  if (content) updateFields.content = content.trim();
+  const hasContentUpdate = typeof content === "string";
+  if (hasContentUpdate) {
+    if (!content.trim()) {
+      throw new ApiError(400, "Content cannot be empty");
+    }
+    updateFields.content = content.trim();
+    updateFields.aiStatus = "pending";
+  }
   if (Array.isArray(tags)) {
     updateFields.tags = tags.map((tag) => tag.trim().toLowerCase());
   }
@@ -77,6 +82,23 @@ const updateJournal = asyncHandler(async (req, res) => {
   res
     .status(200)
     .json(new ApiResponse(200, "Journal updated successfully", updatedJournal));
+
+  if (hasContentUpdate) {
+    analyzeJournal(updateFields.content)
+      .then(async (aiResult) => {
+        await Journal.findByIdAndUpdate(updatedJournal._id, {
+          sentiment: aiResult.sentiment,
+          moodScore: aiResult.moodScore,
+          summary: aiResult.summary,
+          aiStatus: "completed",
+        });
+      })
+      .catch(async (error) => {
+        await Journal.findByIdAndUpdate(updatedJournal._id, {
+          aiStatus: "failed",
+        });
+      });
+  }
 });
 
 const getAllJournals = asyncHandler(async (req, res) => {
