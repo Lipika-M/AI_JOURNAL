@@ -8,24 +8,39 @@ cloudinary.config({
 });
 
 const uploadOnCloudinary = async (localFilePath) => {
+    let response = null;
+
     try {
         if (!localFilePath) return null;
 
-        const response = await cloudinary.uploader.upload(localFilePath, {
+        response = await cloudinary.uploader.upload(localFilePath, {
             resource_type: "image",
         });
-
-        if (fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath);
-        }
-
-        return response;
     } catch (error) {
+        response = null;
+    } finally {
         if (localFilePath && fs.existsSync(localFilePath)) {
-            fs.unlinkSync(localFilePath);
+            try {
+                fs.unlinkSync(localFilePath);
+            } catch (unlinkError) {
+                console.error("Failed to remove temp file:", localFilePath);
+            }
         }
+    }
+
+    return response;
+};
+
+const deleteFromCloudinary = async (publicId) => {
+    if (!publicId) return null;
+
+    try {
+        return await cloudinary.uploader.destroy(publicId, {
+            resource_type: "image",
+        });
+    } catch (error) {
         return null;
     }
 };
 
-export { uploadOnCloudinary };
+export { uploadOnCloudinary, deleteFromCloudinary };

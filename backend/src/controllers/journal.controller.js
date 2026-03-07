@@ -4,7 +4,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { Schema } from "mongoose";
 import { analyzeJournal } from "../services/ai.service.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js";
+import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 
 const normalizeTags = (tags) => {
   if (Array.isArray(tags)) {
@@ -23,6 +23,31 @@ const normalizeTags = (tags) => {
   }
 
   return [];
+};
+
+const normalizePublicIds = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item || "").trim()).filter(Boolean);
+  }
+
+  if (typeof value === "string") {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        return parsed.map((item) => String(item || "").trim()).filter(Boolean);
+      }
+    } catch {
+      return value.split(",").map((item) => item.trim()).filter(Boolean);
+    }
+  }
+
+  return [];
+};
+
+const normalizeBoolean = (value) => {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") return value.toLowerCase() === "true";
+  return false;
 };
 
 const createJournal = asyncHandler(async (req, res) => {
@@ -87,7 +112,7 @@ const updateJournal = asyncHandler(async (req, res) => {
   if (!journalId) {
     throw new ApiError(400, "No Journal found");
   }
-  const { title, content, tags } = req.body;
+  const { title, content, tags, removeImagePublicIds, appendImages } = req.body;
 
   const existingJournal = await Journal.findOne({
     _id: journalId,
@@ -127,6 +152,28 @@ const updateJournal = asyncHandler(async (req, res) => {
     throw new ApiError(400, "You can upload a maximum of 2 images");
   }
 
+  const shouldAppendImages = normalizeBoolean(appendImages);
+  const imageIdsToRemove = normalizePublicIds(removeImagePublicIds);
+  let currentImages = Array.isArray(existingJournal.images)
+    ? [...existingJournal.images]
+    : [];
+
+  if (imageIdsToRemove.length > 0) {
+    const removedImages = currentImages.filter((image) =>
+      imageIdsToRemove.includes(image.publicId)
+    );
+
+    currentImages = currentImages.filter(
+      (image) => !imageIdsToRemove.includes(image.publicId)
+    );
+
+    if (removedImages.length > 0) {
+      await Promise.all(
+        removedImages.map((image) => deleteFromCloudinary(image.publicId))
+      );
+    }
+  }
+
   if (files.length > 0) {
     const uploadedImages = [];
     for (const file of files) {
@@ -137,7 +184,21 @@ const updateJournal = asyncHandler(async (req, res) => {
       uploadedImages.push({ url: image.secure_url, publicId: image.public_id });
     }
 
-    updateFields.images = uploadedImages;
+    if (shouldAppendImages) {
+      if (currentImages.length + uploadedImages.length > 2) {
+        throw new ApiError(400, "You can upload a maximum of 2 images");
+      }
+      updateFields.images = [...currentImages, ...uploadedImages];
+    } else {
+      if (currentImages.length > 0) {
+        await Promise.all(
+          currentImages.map((image) => deleteFromCloudinary(image.publicId))
+        );
+      }
+      updateFields.images = uploadedImages;
+    }
+  } else if (imageIdsToRemove.length > 0) {
+    updateFields.images = currentImages;
   }
 
   Object.assign(existingJournal, updateFields);
@@ -213,11 +274,24 @@ const deleteJournal = asyncHandler(async (req, res) => {
   ) {
     throw new ApiError(400, "Invalid journal ID");
   }
-  const deletedJournal = await Journal.findOneAndUpdate(
-    { _id: journalId, owner: req.user._id, isDeleted: false },
-    { isDeleted: true },
-    { new: true }
-  );
+  const existingJournal = await Journal.findOne({
+    _id: journalId,
+    owner: req.user._id,
+    isDeleted: false,
+  });
+
+  if (!existingJournal) {
+    throw new ApiError(404, "Journal not found or unauthorized");
+  }
+
+  if (Array.isArray(existingJournal.images) && existingJournal.images.length > 0) {
+    await Promise.all(
+      existingJournal.images.map((image) => deleteFromCloudinary(image.publicId))
+    );
+  }
+
+  existingJournal.isDeleted = true;
+  const deletedJournal = await existingJournal.save({ validateBeforeSave: false });
 
   if (!deletedJournal) {
     throw new ApiError(404, "Journal not found or unauthorized");
