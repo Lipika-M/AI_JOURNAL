@@ -6,6 +6,10 @@ export interface Journal {
     sentiment?: "positive" | "negative" | "neutral",
     moodScore?: number,
     summary?: string,
+    images?: Array<{
+        url: string,
+        publicId: string,
+    }>,
     tags?: string[],
     aiStatus?: "pending" | "completed" | "failed",
     isDeleted?: boolean,

@@ -10,17 +10,40 @@ interface CreateJournalPayload {
   title: string;
   content: string;
   tags?: string[];
+  images?: File[];
 }
 
 interface UpdateJournalPayload {
   title?: string;
   content?: string;
   tags?: string[];
+  images?: File[];
+  removeImagePublicIds?: string[];
+  appendImages?: boolean;
 }
 
 const journalApi = {
   createJournal: async (data: CreateJournalPayload): Promise<JournalResponse> => {
-    const res = await api.post<JournalResponse>("/journals", data);
+    const formData = new FormData();
+    formData.append("title", data.title);
+    formData.append("content", data.content);
+
+    if (Array.isArray(data.tags)) {
+      formData.append("tags", JSON.stringify(data.tags));
+    }
+
+    if (Array.isArray(data.images)) {
+      if (data.images.length > 2) {
+        throw new Error("You can upload a maximum of 2 images");
+      }
+      data.images.forEach((image) => formData.append("images", image));
+    }
+
+    const res = await api.post<JournalResponse>("/journals", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   },
 
@@ -28,7 +51,40 @@ const journalApi = {
     id: string,
     data: UpdateJournalPayload
   ): Promise<JournalResponse> => {
-    const res = await api.put<JournalResponse>(`/journals/${id}`, data);
+    const formData = new FormData();
+
+    if (typeof data.title === "string") {
+      formData.append("title", data.title);
+    }
+
+    if (typeof data.content === "string") {
+      formData.append("content", data.content);
+    }
+
+    if (Array.isArray(data.tags)) {
+      formData.append("tags", JSON.stringify(data.tags));
+    }
+
+    if (Array.isArray(data.images)) {
+      if (data.images.length > 2) {
+        throw new Error("You can upload a maximum of 2 images");
+      }
+      data.images.forEach((image) => formData.append("images", image));
+    }
+
+    if (Array.isArray(data.removeImagePublicIds) && data.removeImagePublicIds.length > 0) {
+      formData.append("removeImagePublicIds", JSON.stringify(data.removeImagePublicIds));
+    }
+
+    if (typeof data.appendImages === "boolean") {
+      formData.append("appendImages", String(data.appendImages));
+    }
+
+    const res = await api.put<JournalResponse>(`/journals/${id}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
     return res.data;
   },
 

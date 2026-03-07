@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import journalApi from "../api/journal.api";
 import type { Journal } from "../types/journal.type";
@@ -13,6 +13,12 @@ const JournalDetail = () => {
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showEditorModal, setShowEditorModal] = useState(false);
+  const [isUploadingImages, setIsUploadingImages] = useState(false);
+  const [imageUploadError, setImageUploadError] = useState<string | null>(null);
+  const [imageUploadSuccess, setImageUploadSuccess] = useState<string | null>(null);
+  const [selectedImagePublicIds, setSelectedImagePublicIds] = useState<string[]>([]);
+  const [isDeletingImages, setIsDeletingImages] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (id) {
@@ -46,6 +52,71 @@ const JournalDetail = () => {
     }
   };
 
+  const handleAddImagesClick = () => {
+    setImageUploadError(null);
+    setImageUploadSuccess(null);
+    imageInputRef.current?.click();
+  };
+
+  const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+
+    if (!files.length || !journal) return;
+
+    if (files.length > 2) {
+      setImageUploadError("You can upload a maximum of 2 images");
+      return;
+    }
+
+    try {
+      setIsUploadingImages(true);
+      setImageUploadError(null);
+      setImageUploadSuccess(null);
+
+      await journalApi.updateJournal(journal._id, {
+        images: files,
+        appendImages: true,
+      });
+      await fetchJournal();
+      setImageUploadSuccess("Images uploaded successfully");
+    } catch (err: any) {
+      setImageUploadError(err.response?.data?.message || "Failed to upload images");
+    } finally {
+      setIsUploadingImages(false);
+    }
+  };
+
+  const toggleImageSelection = (publicId: string) => {
+    setSelectedImagePublicIds((prev) =>
+      prev.includes(publicId)
+        ? prev.filter((id) => id !== publicId)
+        : [...prev, publicId]
+    );
+  };
+
+  const handleDeleteSelectedImages = async () => {
+    if (!journal || selectedImagePublicIds.length === 0) return;
+
+    try {
+      setIsDeletingImages(true);
+      setImageUploadError(null);
+      setImageUploadSuccess(null);
+
+      await journalApi.updateJournal(journal._id, {
+        removeImagePublicIds: selectedImagePublicIds,
+      });
+
+      setSelectedImagePublicIds([]);
+      await fetchJournal();
+      setImageUploadSuccess("Selected images deleted successfully");
+    } catch (err: any) {
+      setImageUploadError(err.response?.data?.message || "Failed to delete selected images");
+    } finally {
+      setIsDeletingImages(false);
+    }
+  };
+
   const getSentimentColor = (sentiment?: string) => {
     switch (sentiment) {
       case "positive":
@@ -75,6 +146,17 @@ const JournalDetail = () => {
   const getSentimentLabel = (sentiment?: string) => {
     if (!sentiment) return "Neutral";
     return sentiment.charAt(0).toUpperCase() + sentiment.slice(1);
+  };
+
+  const getAiStatusColor = (status?: string) => {
+    switch (status) {
+      case "completed":
+        return "bg-emerald-100 text-emerald-700 border-emerald-200";
+      case "failed":
+        return "bg-red-100 text-red-700 border-red-200";
+      default:
+        return "bg-amber-100 text-amber-700 border-amber-200";
+    }
   };
 
   const getSentimentIcon = (sentiment?: string) => {
@@ -178,6 +260,15 @@ const JournalDetail = () => {
     );
   }
 
+  const wordCount = journal.content.trim().split(/\s+/).filter(Boolean).length;
+  const characterCount = journal.content.length;
+  const imageCount = journal.images?.length || 0;
+  const tagCount = journal.tags?.length || 0;
+  const moodPercent =
+    typeof journal.moodScore === "number"
+      ? Math.max(0, Math.min(100, journal.moodScore * 100))
+      : null;
+
   return (
     <div className="min-h-screen bg-[#f7f7f7] text-slate-900">
       {/* Navigation Bar */}
@@ -199,6 +290,28 @@ const JournalDetail = () => {
               Back
             </button>
             <div className="flex gap-2">
+              <button
+                onClick={handleAddImagesClick}
+                disabled={isUploadingImages}
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 font-medium text-slate-700 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M12 4v8m4-4H8" />
+                </svg>
+                {isUploadingImages ? "Uploading..." : "Add Images"}
+              </button>
+              {selectedImagePublicIds.length > 0 && (
+                <button
+                  onClick={handleDeleteSelectedImages}
+                  disabled={isDeletingImages}
+                  className="inline-flex items-center gap-2 rounded-xl bg-red-100 px-4 py-2 font-medium text-red-700 shadow-sm transition hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a2 2 0 002 2h4a2 2 0 002-2V7" />
+                  </svg>
+                  {isDeletingImages ? "Deleting..." : `Delete Selected (${selectedImagePublicIds.length})`}
+                </button>
+              )}
               <button
                 onClick={() => setShowEditorModal(true)}
                 className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-slate-800"
@@ -238,6 +351,14 @@ const JournalDetail = () => {
                 Delete
               </button>
             </div>
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/jpg,image/webp"
+              multiple
+              className="hidden"
+              onChange={handleImageUpload}
+            />
           </div>
         </div>
       </nav>
@@ -263,6 +384,18 @@ const JournalDetail = () => {
                 <p className="text-sm font-medium text-red-800">{error}</p>
               </div>
             </div>
+          </div>
+        )}
+
+        {imageUploadError && (
+          <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+            <p className="text-sm font-medium text-red-800">{imageUploadError}</p>
+          </div>
+        )}
+
+        {imageUploadSuccess && (
+          <div className="mb-6 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+            <p className="text-sm font-medium text-emerald-800">{imageUploadSuccess}</p>
           </div>
         )}
 
@@ -298,92 +431,54 @@ const JournalDetail = () => {
             )}
           </div>
 
-          {/* AI Analysis Section */}
-          {(journal.sentiment || journal.moodScore || journal.summary) && (
-            <div className="grid md:grid-cols-3 gap-4 mb-6">
-              {/* Sentiment */}
-              {journal.sentiment && (
-                <div
-                  className={`p-4 rounded-lg border ${getSentimentColor(journal.sentiment)}`}
-                >
-                  <p className="inline-flex items-center gap-2 text-sm text-gray-600 font-medium mb-1">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Mood Sentiment
-                  </p>
-                  <p className={`inline-flex items-center gap-2 text-lg font-semibold ${getSentimentTextColor(journal.sentiment)}`}>
-                    {getSentimentIcon(journal.sentiment)}
-                    {getSentimentLabel(journal.sentiment)}
-                  </p>
-                </div>
-              )}
-
-              {/* Mood Score */}
-              {journal.moodScore !== undefined && (
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                  <p className="mb-1 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 13l4-4 4 4 8-8" />
-                    </svg>
-                    Mood Score
-                  </p>
-                  <div className="flex items-end gap-2">
-                    <span className="text-3xl font-bold text-slate-800">
-                      {(journal.moodScore * 100).toFixed(0)}
-                    </span>
-                    <span className="mb-1 text-slate-600">%</span>
-                  </div>
-                  <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
-                    <div
-                      className="h-2 rounded-full bg-slate-700"
-                      style={{
-                        width: `${Math.max(0, Math.min(100, journal.moodScore * 100))}%`,
-                      }}
-                    ></div>
-                  </div>
-                </div>
-              )}
-
-              {/* AI Summary */}
-              {journal.summary && (
-                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
-                  <p className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
-                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
-                    AI Summary
-                  </p>
-                  <p className="line-clamp-3 text-sm text-slate-700">{journal.summary}</p>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Tags */}
-          {journal.tags && journal.tags.length > 0 && (
+          {/* Uploaded Images */}
+          {journal.images && journal.images.length > 0 && (
             <div className="mb-6">
-              <p className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+              <div className="mb-3 flex items-center justify-between gap-3">
+                <p className="inline-flex items-center gap-2 text-sm font-medium text-slate-600">
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                Tags
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {journal.tags.map((tag, idx) => (
-                  <span
-                    key={idx}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700"
+                Images
+                </p>
+                {selectedImagePublicIds.length > 0 && (
+                  <p className="text-xs font-medium text-slate-600">
+                    {selectedImagePublicIds.length} selected
+                  </p>
+                )}
+              </div>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {journal.images.map((image) => (
+                  <button
+                    key={image.publicId}
+                    type="button"
+                    onClick={() => toggleImageSelection(image.publicId)}
+                    className={`relative overflow-hidden rounded-xl border text-left transition ${
+                      selectedImagePublicIds.includes(image.publicId)
+                        ? "border-red-400 ring-2 ring-red-200"
+                        : "border-slate-200"
+                    }`}
                   >
-                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                    </svg>
-                    #{tag}
-                  </span>
+                    <img
+                      src={image.url}
+                      alt="Journal attachment"
+                      className="h-56 w-full object-cover"
+                    />
+                    <span
+                      className={`absolute right-3 top-3 inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs font-bold ${
+                        selectedImagePublicIds.includes(image.publicId)
+                          ? "border-red-500 bg-red-500 text-white"
+                          : "border-white bg-white/90 text-slate-700"
+                      }`}
+                    >
+                      {selectedImagePublicIds.includes(image.publicId) ? "-" : "+"}
+                    </span>
+                  </button>
                 ))}
               </div>
             </div>
           )}
+
         </div>
 
         {/* Journal Content */}
@@ -395,27 +490,87 @@ const JournalDetail = () => {
           </div>
         </div>
 
-        {/* AI Summary Card (if available) */}
-        {journal.summary && (
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0">
-                <svg className="w-6 h-6 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                </svg>
-              </div>
-              <div>
-                <h3 className="mb-2 inline-flex items-center gap-2 text-lg font-semibold text-slate-800">
-                  <svg className="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                  </svg>
-                  AI Generated Summary
-                </h3>
-                <p className="leading-relaxed text-slate-700">{journal.summary}</p>
-              </div>
+        {/* Detailed Analysis */}
+        <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
+              <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h3v6m3 0V7h3v10M3 17V9h3v8" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-semibold text-slate-900">Detailed Analysis</h2>
+          </div>
+
+          <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <div className={`rounded-xl border p-4 ${getSentimentColor(journal.sentiment)}`}>
+              <p className="mb-2 text-sm font-medium text-slate-600">Sentiment</p>
+              <p className={`inline-flex items-center gap-2 text-base font-semibold ${getSentimentTextColor(journal.sentiment)}`}>
+                {getSentimentIcon(journal.sentiment)}
+                {getSentimentLabel(journal.sentiment)}
+              </p>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-2 text-sm font-medium text-slate-600">Mood Score</p>
+              <p className="text-2xl font-bold text-slate-900">{moodPercent !== null ? `${Math.round(moodPercent)}%` : "N/A"}</p>
+              {moodPercent !== null && (
+                <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
+                  <div className="h-2 rounded-full bg-slate-700" style={{ width: `${moodPercent}%` }}></div>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-2 text-sm font-medium text-slate-600">AI Status</p>
+              <span className={`inline-flex items-center rounded-full border px-3 py-1 text-sm font-semibold capitalize ${getAiStatusColor(journal.aiStatus)}`}>
+                {journal.aiStatus || "pending"}
+              </span>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-2 text-sm font-medium text-slate-600">Content Stats</p>
+              <p className="text-sm font-medium text-slate-800">{wordCount} words</p>
+              <p className="text-sm text-slate-600">{characterCount} characters</p>
             </div>
           </div>
-        )}
+
+          <div className="mb-6 grid gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-2 text-sm font-medium text-slate-600">Media and Labels</p>
+              <p className="text-sm text-slate-700">Images: <span className="font-semibold text-slate-900">{imageCount}</span></p>
+              <p className="text-sm text-slate-700">Tags: <span className="font-semibold text-slate-900">{tagCount}</span></p>
+              {journal.tags && journal.tags.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {journal.tags.map((tag, idx) => (
+                    <span
+                      key={idx}
+                      className="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <p className="mb-2 text-sm font-medium text-slate-600">Timeline</p>
+              <p className="text-sm text-slate-700">
+                Created: <span className="font-medium text-slate-900">{formatDate(journal.createdAt)}</span>
+              </p>
+              <p className="text-sm text-slate-700">
+                Updated: <span className="font-medium text-slate-900">{formatDate(journal.updatedAt || journal.createdAt)}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+            <h3 className="mb-2 text-base font-semibold text-slate-900">AI Summary</h3>
+            <p className="leading-relaxed text-slate-700">
+              {journal.summary || "Summary is not available yet. Analysis may still be processing."}
+            </p>
+          </div>
+        </section>
       </div>
 
       {/* Delete Confirmation Modal */}
