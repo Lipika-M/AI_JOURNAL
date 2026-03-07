@@ -14,7 +14,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="app-sky-bg min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
         {/* 404 Illustration */}
         <div className="mb-8">
@@ -36,7 +36,7 @@ const NotFound = () => {
         </div>
 
         {/* Card */}
-        <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-lg p-8 border border-white/60">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           {/* 404 Text */}
           <h1 className="text-6xl font-bold text-gray-800 mb-2">404</h1>
           <h2 className="text-2xl font-semibold text-gray-800 mb-4">
@@ -53,7 +53,7 @@ const NotFound = () => {
           <div className="space-y-3">
             <button
               onClick={handleGoHome}
-              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 font-medium text-white transition hover:bg-slate-800"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-6-6 6 6-6 6" />
@@ -62,7 +62,7 @@ const NotFound = () => {
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-5 py-2.5 font-medium transition-all duration-300 border border-stone-300"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -73,7 +73,7 @@ const NotFound = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm text-slate-600">
           <p>If you think this is a mistake, please contact support</p>
         </div>
       </div>

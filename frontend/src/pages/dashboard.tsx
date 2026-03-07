@@ -343,30 +343,29 @@ const getSentimentIcon = (sentiment?: string) => {
   const moodChartPoints = getMoodChartPoints();
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] text-slate-900">
+    <div className="relative min-h-screen overflow-hidden bg-[#f7f7f7] text-slate-900">
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute left-1/2 top-1/2 h-[34rem] w-[34rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-300/35 blur-3xl" />
+      </div>
 
       {/* Navigation Bar */}
-      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md">
+      <nav className="sticky top-0 z-50 border-b border-slate-800 bg-slate-950/95 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
-                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                </svg>
-              </div>
-              <h1 className="text-2xl font-semibold text-slate-900">Solace</h1>
+              <img src="/solace.svg" alt="Solace logo" className="h-9 w-9 rounded-lg ring-1 ring-slate-700" />
+              <h1 className="text-2xl font-semibold text-white">Solace</h1>
             </div>
             <div className="flex items-center gap-6">
-              <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm text-gray-600">
-                <svg className="h-4 w-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <span className="inline-flex items-center gap-2 rounded-full border border-slate-700 bg-slate-900 px-3 py-1 text-sm text-slate-200">
+                <svg className="h-4 w-4 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
                 {journals.length} {journals.length === 1 ? 'entry' : 'entries'}
               </span>
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-2 rounded-xl px-4 py-1.5 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-slate-100 hover:text-slate-900"
+                className="flex items-center gap-2 rounded-xl px-4 py-1.5 text-sm font-medium text-slate-200 transition-all duration-300 hover:bg-slate-800 hover:text-white"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -379,7 +378,7 @@ const getSentimentIcon = (sentiment?: string) => {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-10">
           <div className="flex items-end justify-between mb-8">

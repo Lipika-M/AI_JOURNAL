@@ -276,7 +276,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-gradient-to-r from-blue-400/90 to-purple-400/90 backdrop-blur-sm hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-300/40 rounded-xl px-6 py-2 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 py-2 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {isLoading ? (
                 <>

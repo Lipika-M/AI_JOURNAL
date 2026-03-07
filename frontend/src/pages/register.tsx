@@ -114,16 +114,16 @@ const Register = () => {
   };
 
   return (
-    <div className="app-sky-bg min-h-screen flex items-center justify-center px-4 py-8">
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4 py-8">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-lg p-8 border border-white/60">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-serif bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h1 className="mb-2 text-4xl font-semibold text-slate-900">
               Solace
             </h1>
-            <p className="text-gray-600 italic">Create your account to get started</p>
+            <p className="text-slate-600">Create your account to get started</p>
           </div>
 
           {/* Error Alert */}
@@ -170,7 +170,7 @@ const Register = () => {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
                   formErrors.fullName
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-stone-300 focus:ring-stone-400'
+                    : 'border-slate-300 focus:ring-slate-400'
                 }`}
                 disabled={isLoading}
               />
@@ -197,7 +197,7 @@ const Register = () => {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
                   formErrors.email
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-stone-300 focus:ring-stone-400'
+                    : 'border-slate-300 focus:ring-slate-400'
                 }`}
                 disabled={isLoading}
               />
@@ -224,7 +224,7 @@ const Register = () => {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
                   formErrors.userName
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-stone-300 focus:ring-stone-400'
+                    : 'border-slate-300 focus:ring-slate-400'
                 }`}
                 disabled={isLoading}
               />
@@ -252,14 +252,14 @@ const Register = () => {
                   className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
                     formErrors.password
                       ? 'border-red-500 focus:ring-red-500'
-                      : 'border-stone-300 focus:ring-stone-400'
+                      : 'border-slate-300 focus:ring-slate-400'
                   }`}
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   disabled={isLoading}
                 >
                   {showPassword ? (
@@ -323,14 +323,14 @@ const Register = () => {
                   className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
                     formErrors.confirmPassword
                       ? 'border-red-500 focus:ring-red-500'
-                      : 'border-stone-300 focus:ring-stone-400'
+                      : 'border-slate-300 focus:ring-slate-400'
                   }`}
                   disabled={isLoading}
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                   disabled={isLoading}
                 >
                   {showConfirmPassword ? (
@@ -381,7 +381,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center mt-6"
+              className="mt-6 flex w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
                 <>
@@ -434,7 +434,7 @@ const Register = () => {
           <div className="mt-6">
             <Link
               to="/login"
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 border border-stone-300 rounded-full text-gray-700 font-medium hover:bg-stone-50 transition-all duration-300"
+              className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 border border-slate-300 rounded-full text-slate-700 font-medium hover:bg-slate-50 transition-all duration-300"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
@@ -445,7 +445,7 @@ const Register = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm text-slate-600">
           <p>By registering, you agree to our terms of service</p>
         </div>
       </div>

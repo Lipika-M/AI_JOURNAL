@@ -22,6 +22,7 @@ const Login = () => {
   });
 
   const [formErrors, setFormErrors] = useState<FormErrors>({});
+  const [showPassword, setShowPassword] = useState(false);
 
    
   useEffect(() => {
@@ -78,16 +79,16 @@ const Login = () => {
   };
 
   return (
-    <div className="app-sky-bg min-h-screen flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-lg p-8 border border-white/60">
+        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-serif bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+            <h1 className="mb-2 text-4xl font-semibold text-slate-900">
               Solace
             </h1>
-            <p className="text-gray-600 italic">Welcome back! Please log in.</p>
+            <p className="text-slate-600">Welcome back! Please log in.</p>
           </div>
 
           {/* Error Alert */}
@@ -134,7 +135,7 @@ const Login = () => {
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
                   formErrors.emailOrUsername
                     ? 'border-red-500 focus:ring-red-500'
-                    : 'border-stone-300 focus:ring-stone-400'
+                    : 'border-slate-300 focus:ring-slate-400'
                 }`}
                 disabled={isLoading}
               />
@@ -153,20 +154,43 @@ const Login = () => {
               >
                 Password
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                placeholder="Enter your password"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
-                  formErrors.password
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-stone-300 focus:ring-stone-400'
-                }`}
-                disabled={isLoading}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Enter your password"
+                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
+                    formErrors.password
+                      ? 'border-red-500 focus:ring-red-500'
+                      : 'border-slate-300 focus:ring-slate-400'
+                  }`}
+                  disabled={isLoading}
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                  disabled={isLoading}
+                >
+                  {showPassword ? (
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3l18 18" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.584 10.587a2 2 0 002.828 2.828" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.878 5.098A10.014 10.014 0 0112 4.875c4.478 0 8.268 2.943 9.543 7a9.97 9.97 0 01-4.132 5.264" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6.228 6.226A9.97 9.97 0 002.458 12c1.274 4.057 5.065 7 9.542 7 1.664 0 3.232-.406 4.61-1.123" />
+                    </svg>
+                  ) : (
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7C7.523 19 3.732 16.057 2.458 12z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
               {formErrors.password && (
                 <p className="mt-1 text-sm text-red-600">
                   {formErrors.password}
@@ -178,7 +202,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-400/90 to-purple-400/90 backdrop-blur-sm hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-300/40 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              className="flex w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
                 <>
@@ -231,7 +255,7 @@ const Login = () => {
           <div className="mt-6">
             <Link
               to="/register"
-              className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 border border-stone-300 rounded-full text-gray-700 font-medium hover:bg-stone-50 transition-all duration-300"
+              className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 border border-slate-300 rounded-full text-slate-700 font-medium hover:bg-slate-50 transition-all duration-300"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -242,7 +266,7 @@ const Login = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-gray-600">
+        <div className="mt-6 text-center text-sm text-slate-600">
           <p>By logging in, you agree to our terms of service</p>
         </div>
       </div>
