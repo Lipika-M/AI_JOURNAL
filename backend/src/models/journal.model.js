@@ -32,6 +32,29 @@ const journalSchema = new Schema(
     summary: {
       type: String,
     },
+    images: {
+      type: [
+        {
+          url: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          publicId: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+        },
+      ],
+      default: [],
+      validate: {
+        validator: function (value) {
+          return Array.isArray(value) && value.length <= 2;
+        },
+        message: "A journal can contain at most 2 images",
+      },
+    },
     aiStatus: {
       type: String,
       enum: ["pending", "completed", "failed"],
