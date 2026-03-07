@@ -53,14 +53,20 @@ const NotFound = () => {
           <div className="space-y-3">
             <button
               onClick={handleGoHome}
-              className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300"
+              className="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-5 py-2.5 font-medium transition-all duration-300"
             >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-6-6 6 6-6 6" />
+              </svg>
               {isAuthenticated ? 'Go to Dashboard' : 'Go to Login'}
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="w-full rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-5 py-2.5 font-medium transition-all duration-300 border border-stone-300"
+              className="w-full inline-flex items-center justify-center gap-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-5 py-2.5 font-medium transition-all duration-300 border border-stone-300"
             >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
               Go Back
             </button>
           </div>

@@ -408,7 +408,12 @@ const Register = () => {
                   Creating Account...
                 </>
               ) : (
-                'Create Account'
+                <span className="inline-flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  Create Account
+                </span>
               )}
             </button>
           </form>
@@ -429,8 +434,11 @@ const Register = () => {
           <div className="mt-6">
             <Link
               to="/login"
-              className="w-full block text-center py-2 px-4 border border-stone-300 rounded-full text-gray-700 font-medium hover:bg-stone-50 transition-all duration-300"
+              className="w-full inline-flex items-center justify-center gap-2 py-2 px-4 border border-stone-300 rounded-full text-gray-700 font-medium hover:bg-stone-50 transition-all duration-300"
             >
+              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7" />
+              </svg>
               Sign In
             </Link>
           </div>

@@ -72,6 +72,35 @@ const JournalDetail = () => {
     }
   };
 
+  const getSentimentLabel = (sentiment?: string) => {
+    if (!sentiment) return "Neutral";
+    return sentiment.charAt(0).toUpperCase() + sentiment.slice(1);
+  };
+
+  const getSentimentIcon = (sentiment?: string) => {
+    if (sentiment === "positive") {
+      return (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    }
+
+    if (sentiment === "negative") {
+      return (
+        <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.172 15.172a4 4 0 00-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      );
+    }
+
+    return (
+      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 15h8M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      </svg>
+    );
+  };
+
   const formatDate = (dateString?: string) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -86,21 +115,21 @@ const JournalDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="app-sky-bg min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-stone-600"></div>
+      <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600"></div>
       </div>
     );
   }
 
   if (error || !journal) {
     return (
-      <div className="app-sky-bg min-h-screen">
-        <nav className="bg-white/70 backdrop-blur-md shadow-sm border-b border-white/60">
+      <div className="min-h-screen bg-[#f7f7f7] text-slate-900">
+        <nav className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 font-medium flex items-center gap-2 px-3 py-1.5"
+                className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -117,7 +146,7 @@ const JournalDetail = () => {
         </nav>
 
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-md p-8 text-center border border-white/60">
+          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
             <div className="text-red-600 mb-4">
               <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -134,9 +163,14 @@ const JournalDetail = () => {
             </p>
             <button
               onClick={() => navigate("/dashboard")}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-6 py-2 font-medium transition-all duration-300"
+              className="rounded-xl bg-slate-900 px-6 py-2 font-medium text-white transition hover:bg-slate-800"
             >
+                <span className="inline-flex items-center gap-2">
+                  <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
               Back to Dashboard
+                </span>
             </button>
           </div>
         </div>
@@ -145,14 +179,14 @@ const JournalDetail = () => {
   }
 
   return (
-    <div className="app-sky-bg min-h-screen">
+    <div className="min-h-screen bg-[#f7f7f7] text-slate-900">
       {/* Navigation Bar */}
-      <nav className="bg-white/70 backdrop-blur-md shadow-sm border-b border-white/60 sticky top-0 z-40">
+      <nav className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <button
               onClick={() => navigate("/dashboard")}
-              className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 font-medium flex items-center gap-2 px-3 py-1.5"
+              className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -167,7 +201,7 @@ const JournalDetail = () => {
             <div className="flex gap-2">
               <button
                 onClick={() => setShowEditorModal(true)}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-4 py-2 font-medium transition-all duration-300 flex items-center gap-2"
+                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-slate-800"
               >
                 <svg
                   className="w-5 h-5"
@@ -186,7 +220,7 @@ const JournalDetail = () => {
               </button>
               <button
                 onClick={() => setDeleteConfirm(true)}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-4 py-2 font-medium transition-all duration-300 flex items-center gap-2"
+                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-red-700"
               >
                 <svg
                   className="w-5 h-5"
@@ -233,11 +267,11 @@ const JournalDetail = () => {
         )}
 
         {/* Journal Header */}
-        <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-md p-8 mb-6 border border-white/60">
-          <h1 className="text-4xl font-serif text-gray-800 mb-4">{journal.title}</h1>
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+          <h1 className="mb-4 text-4xl font-semibold text-slate-900">{journal.title}</h1>
 
           {/* Meta Information */}
-          <div className="flex flex-wrap gap-4 text-sm text-gray-600 mb-6 pb-6 border-b">
+          <div className="mb-6 flex flex-wrap gap-4 border-b border-slate-200 pb-6 text-sm text-slate-600">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -272,30 +306,37 @@ const JournalDetail = () => {
                 <div
                   className={`p-4 rounded-lg border ${getSentimentColor(journal.sentiment)}`}
                 >
-                  <p className="text-sm text-gray-600 font-medium mb-1">Mood Sentiment</p>
-                  <p
-                    className={`text-lg font-semibold capitalize ${getSentimentTextColor(
-                      journal.sentiment
-                    )}`}
-                  >
-                    {journal.sentiment}
+                  <p className="inline-flex items-center gap-2 text-sm text-gray-600 font-medium mb-1">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Mood Sentiment
+                  </p>
+                  <p className={`inline-flex items-center gap-2 text-lg font-semibold ${getSentimentTextColor(journal.sentiment)}`}>
+                    {getSentimentIcon(journal.sentiment)}
+                    {getSentimentLabel(journal.sentiment)}
                   </p>
                 </div>
               )}
 
               {/* Mood Score */}
               {journal.moodScore !== undefined && (
-                <div className="p-4 rounded-lg border bg-blue-50 border-purple-200">
-                  <p className="text-sm text-gray-600 font-medium mb-1">Mood Score</p>
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <p className="mb-1 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 13l4-4 4 4 8-8" />
+                    </svg>
+                    Mood Score
+                  </p>
                   <div className="flex items-end gap-2">
-                    <span className="text-3xl font-bold text-purple-700">
+                    <span className="text-3xl font-bold text-slate-800">
                       {(journal.moodScore * 100).toFixed(0)}
                     </span>
-                    <span className="text-gray-600 mb-1">%</span>
+                    <span className="mb-1 text-slate-600">%</span>
                   </div>
-                  <div className="mt-2 w-full bg-blue-200 rounded-full h-2">
+                  <div className="mt-2 h-2 w-full rounded-full bg-slate-200">
                     <div
-                      className="bg-purple-600 h-2 rounded-full"
+                      className="h-2 rounded-full bg-slate-700"
                       style={{
                         width: `${Math.max(0, Math.min(100, journal.moodScore * 100))}%`,
                       }}
@@ -306,9 +347,14 @@ const JournalDetail = () => {
 
               {/* AI Summary */}
               {journal.summary && (
-                <div className="p-4 rounded-lg border bg-purple-50 border-purple-200">
-                  <p className="text-sm text-gray-600 font-medium mb-2">AI Summary</p>
-                  <p className="text-sm text-purple-900 line-clamp-3">{journal.summary}</p>
+                <div className="rounded-lg border border-slate-200 bg-slate-50 p-4">
+                  <p className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    AI Summary
+                  </p>
+                  <p className="line-clamp-3 text-sm text-slate-700">{journal.summary}</p>
                 </div>
               )}
             </div>
@@ -317,13 +363,21 @@ const JournalDetail = () => {
           {/* Tags */}
           {journal.tags && journal.tags.length > 0 && (
             <div className="mb-6">
-              <p className="text-sm text-gray-600 font-medium mb-2">Tags</p>
+              <p className="mb-2 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                </svg>
+                Tags
+              </p>
               <div className="flex flex-wrap gap-2">
                 {journal.tags.map((tag, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 bg-stone-100 text-gray-700 rounded-full text-sm font-medium"
+                    className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-sm font-medium text-slate-700"
                   >
+                    <svg className="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
                     #{tag}
                   </span>
                 ))}
@@ -333,9 +387,9 @@ const JournalDetail = () => {
         </div>
 
         {/* Journal Content */}
-        <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-md p-8 mb-6 border border-white/60">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
           <div className="prose prose-lg max-w-none">
-            <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+            <p className="whitespace-pre-wrap leading-relaxed text-slate-700">
               {journal.content}
             </p>
           </div>
@@ -343,16 +397,21 @@ const JournalDetail = () => {
 
         {/* AI Summary Card (if available) */}
         {journal.summary && (
-          <div className="bg-white/70 backdrop-blur-md border border-white/60 rounded-lg p-6 shadow-md">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0">
-                <svg className="w-6 h-6 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-6 h-6 text-slate-700" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-800 mb-2">AI Generated Summary</h3>
-                <p className="text-gray-700 leading-relaxed">{journal.summary}</p>
+                <h3 className="mb-2 inline-flex items-center gap-2 text-lg font-semibold text-slate-800">
+                  <svg className="h-5 w-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  AI Generated Summary
+                </h3>
+                <p className="leading-relaxed text-slate-700">{journal.summary}</p>
               </div>
             </div>
           </div>
@@ -361,24 +420,32 @@ const JournalDetail = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white/70 backdrop-blur-md rounded-lg p-6 max-w-sm w-full shadow-xl border border-white/60">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Delete Journal?</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-2xl">
+            <h3 className="inline-flex items-center gap-2 text-lg font-semibold text-gray-900 mb-2">
+              <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14A1 1 0 003 19h18a1 1 0 00.89-1.47l-8.18-14a1 1 0 00-1.72 0z" />
+              </svg>
+              Delete Journal?
+            </h3>
+            <p className="mb-6 text-slate-600">
               Are you sure you want to delete "{journal.title}"? This action cannot be undone.
             </p>
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setDeleteConfirm(false)}
-                className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-4 py-2 transition-all duration-300"
+                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 disabled={isDeleting}
               >
+                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-4 py-2 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isDeleting ? (
                   <>
@@ -405,7 +472,12 @@ const JournalDetail = () => {
                     Deleting...
                   </>
                 ) : (
-                  "Delete"
+                  <>
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a2 2 0 002 2h4a2 2 0 002-2V7" />
+                    </svg>
+                    Delete
+                  </>
                 )}
               </button>
             </div>
