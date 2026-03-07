@@ -5,9 +5,16 @@
   font-family: "Poppins", sans-serif;
 }
 
+html,
 body {
   font-family: "Poppins", sans-serif;
   color: rgb(17 24 39);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+#root {
+  font-family: "Poppins", sans-serif;
 }
 
 .app-sky-bg {
@@ -72,23 +79,23 @@ button:not(:disabled) {
 }
 
 .app-sky-bg .text-xs {
-  font-size: 0.86rem;
+  font-size: 0.75rem;
 }
 
 .app-sky-bg .text-sm {
-  font-size: 1rem;
+  font-size: 0.875rem;
 }
 
 .app-sky-bg .text-base {
-  font-size: 1.12rem;
+  font-size: 1rem;
 }
 
 .app-sky-bg .text-lg {
-  font-size: 1.22rem;
+  font-size: 1.125rem;
 }
 
 .app-sky-bg .text-xl {
-  font-size: 1.36rem;
+  font-size: 1.25rem;
 }
 
 /* :root {

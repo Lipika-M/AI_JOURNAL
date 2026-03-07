@@ -313,26 +313,25 @@ const getSentimentColor = (sentiment?: string) => {
   const moodChartPoints = getMoodChartPoints();
 
   return (
-    <div className="app-sky-bg dashboard-bg min-h-screen">
-      <div className="dashboard-overlay absolute inset-0 bg-white/30 backdrop-blur-[1px] pointer-events-none"></div>
+    <div className="min-h-screen bg-[#f7f7f7] text-slate-900">
 
       {/* Navigation Bar */}
-      <nav className="bg-white/70 backdrop-blur-md border-b border-white/60 sticky top-0 z-50">
+      <nav className="sticky top-0 z-50 border-b border-slate-200 bg-white/90 backdrop-blur-md">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 bg-gradient-to-br from-blue-400/90 to-purple-400/90 backdrop-blur-sm rounded-lg flex items-center justify-center shadow-lg shadow-purple-300/40">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
-              <h1 className="text-2xl font-semibold  ">Solace</h1>
+              <h1 className="text-2xl font-semibold text-slate-900">Solace</h1>
             </div>
             <div className="flex items-center gap-6">
               <span className="text-sm text-gray-600">{journals.length} {journals.length === 1 ? 'entry' : 'entries'}</span>
               <button
                 onClick={handleLogout}
-                className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-4 py-1.5 text-sm font-medium transition-all duration-300 flex items-center gap-2"
+                className="flex items-center gap-2 rounded-xl px-4 py-1.5 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-slate-100 hover:text-slate-900"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
@@ -355,7 +354,7 @@ const getSentimentColor = (sentiment?: string) => {
             </div>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="bg-gradient-to-r from-blue-400/90 to-purple-400/90 backdrop-blur-sm hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-300/40 rounded-xl px-5 py-2.5 font-medium transition-all duration-300 flex items-center gap-2"
+              className="flex items-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 font-medium text-white shadow-sm transition-all duration-300 hover:bg-slate-800"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -371,9 +370,9 @@ const getSentimentColor = (sentiment?: string) => {
               placeholder="Search journals by title, content, or tags..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-5 pr-14 py-3.5 bg-white/70 backdrop-blur-md border border-white/60 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent text-sm shadow-sm transition-all"
+              className="w-full rounded-xl border border-slate-200 bg-white px-5 py-3.5 pr-14 text-sm shadow-sm transition-all focus:border-transparent focus:outline-none focus:ring-2 focus:ring-slate-400"
             />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2 w-10 h-10 bg-gradient-to-r from-blue-400/90 to-purple-400/90 backdrop-blur-sm hover:from-blue-500 hover:to-purple-500 text-white shadow-lg shadow-purple-300/40 rounded-xl flex items-center justify-center transition-all duration-300">
+            <button className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 transform items-center justify-center rounded-xl bg-slate-900 text-white shadow-sm transition-all duration-300 hover:bg-slate-800">
               <svg
                 className="w-5 h-5"
                 fill="none"
@@ -411,7 +410,7 @@ const getSentimentColor = (sentiment?: string) => {
               </div>
               <button
                 onClick={() => setError(null)}
-                className="ml-auto rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200"
+                className="ml-auto rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path
@@ -430,9 +429,9 @@ const getSentimentColor = (sentiment?: string) => {
           <section className="mb-12">
             {/* Mood Trends Chart - Full Width */}
             {moodTrends.length > 0 && (
-              <div className="bg-white/70 backdrop-blur-md rounded-2xl shadow-lg border border-white/60 p-8 mb-6">
+              <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-400/80 to-purple-400/80 rounded-lg flex items-center justify-center shadow-md">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                     </svg>
@@ -498,7 +497,7 @@ const getSentimentColor = (sentiment?: string) => {
                       <path
                         d={buildSmoothMoodPath(moodChartPoints)}
                         fill="none"
-                        stroke="#8b5cf6"
+                        stroke="#334155"
                         strokeWidth="3"
                         strokeLinecap="round"
                         strokeLinejoin="round"
@@ -510,7 +509,7 @@ const getSentimentColor = (sentiment?: string) => {
                           y1="30"
                           x2={hoveredMoodPoint.x}
                           y2="300"
-                          stroke="#8b5cf6"
+                          stroke="#334155"
                           strokeWidth="1.5"
                           strokeDasharray="4,4"
                           opacity="0.75"
@@ -527,7 +526,7 @@ const getSentimentColor = (sentiment?: string) => {
                               cx={x}
                               cy={y}
                               r={hoveredMoodPoint?.index === index ? "6" : "4"}
-                              fill="#3b82f6"
+                              fill="#475569"
                               stroke="white"
                               strokeWidth="2"
                               className="transition-all duration-200"
@@ -548,7 +547,7 @@ const getSentimentColor = (sentiment?: string) => {
                         <div className="text-slate-700 font-medium text-sm whitespace-nowrap">
                           {hoveredMoodPoint.label}
                         </div>
-                        <div className="text-purple-600 font-medium text-xs whitespace-nowrap">
+                        <div className="text-slate-600 font-medium text-xs whitespace-nowrap">
                           Mood: {hoveredMoodPoint.value}%
                         </div>
                       </div>
@@ -562,7 +561,7 @@ const getSentimentColor = (sentiment?: string) => {
 
               {/* Sentiments */}
               {sentimentDistribution.length > 0 && (
-                <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 h-full min-h-[520px] flex flex-col">
+                <div className="flex h-full min-h-[520px] flex-col rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                       <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -675,7 +674,7 @@ const getSentimentColor = (sentiment?: string) => {
                         return (
                           <div
                             key={item.sentiment}
-                            className={`w-full max-w-[150px] mx-auto text-center py-4 px-5 rounded-2xl bg-white/70 backdrop-blur-sm border border-white/50 transition-all duration-300 ${isActive ? 'shadow-sm ring-1 ring-purple-300/50' : ''}`}
+                            className={`mx-auto w-full max-w-[150px] rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center transition-all duration-300 ${isActive ? 'shadow-sm ring-1 ring-slate-300/70' : ''}`}
                           >
                             <div className="text-2xl font-bold text-slate-800 leading-none">{totalPercent}%</div>
                             <div className="text-[11px] text-slate-600 mt-2 capitalize">{item.sentiment}</div>
@@ -688,10 +687,10 @@ const getSentimentColor = (sentiment?: string) => {
               )}
               {/* Top Tags */}
               {tagsDistribution.length > 0 && (
-                <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8 h-full min-h-[520px] flex flex-col">
+                <div className="flex h-full min-h-[520px] flex-col rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 bg-pink-100 rounded-lg flex items-center justify-center">
-                      <svg className="w-5 h-5 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
+                      <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                     </div>
@@ -699,8 +698,8 @@ const getSentimentColor = (sentiment?: string) => {
                   </div>
                   <div className="space-y-2 flex-1">
                     {tagsDistribution.slice(0, 5).map((tag, index) => (
-                      <div key={tag.tag} className="flex items-center gap-4 bg-gray-50/70 hover:bg-gray-100/80 px-4 py-3 rounded-xl transition-colors">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                      <div key={tag.tag} className="flex items-center gap-4 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-slate-100">
+                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">
                           {index + 1}
                         </div>
                         <span className="text-sm text-gray-800 font-medium flex-1">{tag.tag}</span>
@@ -716,9 +715,9 @@ const getSentimentColor = (sentiment?: string) => {
 
             {/* Best Moods - Horizontal Cards */}
             {topTagsByMood.length > 0 && (
-              <div className="bg-white/70 backdrop-blur-md rounded-3xl shadow-sm border border-white/60 p-8">
+              <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-10 h-10 bg-yellow-400 rounded-lg flex items-center justify-center shadow-sm">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
                     <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
@@ -728,7 +727,7 @@ const getSentimentColor = (sentiment?: string) => {
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                   {topTagsByMood.map((tag) => (
                     <div key={tag.tag} className="bg-white/70 rounded-xl p-4 border border-white/60">
-                      <div className="text-3xl font-bold text-blue-600 mb-1">
+                      <div className="mb-1 text-3xl font-bold text-slate-800">
                         {Math.round(tag.averageMood * 100)}%
                       </div>
                       <div className="text-sm text-slate-700 font-medium truncate">
@@ -771,7 +770,7 @@ const getSentimentColor = (sentiment?: string) => {
             <p className="text-gray-600 mb-6">Create your first journal entry to begin tracking your thoughts and moods.</p>
             <button
               onClick={() => setShowEditorModal(true)}
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-6 py-2.5 font-medium transition-all duration-300"
+              className="rounded-xl bg-slate-900 px-6 py-2.5 font-medium text-white transition-all duration-300 hover:bg-slate-800"
             >
               Create Your First Entry
             </button>
@@ -819,12 +818,12 @@ const getSentimentColor = (sentiment?: string) => {
                     <div key={journal._id} className="relative flex gap-6">
                       {/* Timeline Connector */}
                       {index !== filteredJournals.length - 1 && (
-                        <div className="absolute left-8 top-20 bottom-0 w-0.5 bg-gradient-to-b from-blue-200/60 via-purple-200/60 to-transparent hidden md:block" />
+                        <div className="absolute bottom-0 left-8 top-20 hidden w-0.5 bg-gradient-to-b from-slate-300 via-slate-300/70 to-transparent md:block" />
                       )}
 
                       {/* Date Circle */}
                       <div className="hidden md:flex flex-col items-center flex-shrink-0">
-                        <div className="w-16 h-16 bg-gradient-to-br from-blue-400/90 to-purple-400/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg relative z-10">
+                        <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full bg-slate-900 shadow-sm">
                           <div className="text-center text-white">
                             <div className="text-xs font-light opacity-90">{monthShort}</div>
                             <div className="text-lg font-semibold leading-tight">{day}</div>
@@ -834,8 +833,8 @@ const getSentimentColor = (sentiment?: string) => {
                       
                       {/* Card */}
                       <div
-                        className="flex-1 bg-white/70 backdrop-blur-md border border-white/60 
-             hover:shadow-md hover:shadow-slate-200/60 
+                        className="flex-1 border border-slate-200 bg-white 
+             hover:shadow-md hover:shadow-slate-200/70 
              transition-all duration-300 rounded-2xl p-8 cursor-pointer"
                         onClick={() => navigate(`/journals/${journal._id}`)}
                       >
@@ -922,8 +921,8 @@ const getSentimentColor = (sentiment?: string) => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-          <div className="bg-white/70 backdrop-blur-md rounded-xl p-6 max-w-sm w-full shadow-2xl border border-white/60">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-2xl">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Delete Entry?
             </h3>
@@ -933,13 +932,13 @@ const getSentimentColor = (sentiment?: string) => {
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-4 py-2.5 transition-all duration-300 font-medium"
+                className="flex-1 rounded-xl px-4 py-2.5 font-medium text-slate-600 transition-all duration-300 hover:bg-slate-100 hover:text-slate-900"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteJournal(deleteConfirm)}
-                className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white shadow-lg shadow-purple-200/50 rounded-xl px-4 py-2.5 transition-all duration-300 font-medium"
+                className="flex-1 rounded-xl bg-red-600 px-4 py-2.5 font-medium text-white transition-all duration-300 hover:bg-red-700"
               >
                 Delete
               </button>
