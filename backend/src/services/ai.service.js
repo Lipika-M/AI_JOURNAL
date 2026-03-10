@@ -1,9 +1,22 @@
+import crypto from "crypto";
+import { getCache, setCache } from "../utils/cache.js";
+
 const HUGGINGFACE_API_URL = "https://router.huggingface.co/hf-inference/models";
 const HUGGINGFACE_MODEL =
   process.env.HUGGINGFACE_MODEL ??
   "cardiffnlp/twitter-roberta-base-sentiment-latest";
 const GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions";
 const GROQ_MODEL = process.env.GROQ_MODEL ?? "llama-3.1-8b-instant";
+const AI_CACHE_TTL = 3600;
+
+const buildAiCacheKey = (content) => {
+  const contentHash = crypto
+    .createHash("sha256")
+    .update(content.trim())
+    .digest("hex");
+
+  return `ai:analysis:${HUGGINGFACE_MODEL}:${GROQ_MODEL}:${contentHash}`;
+};
 
 const getHuggingFaceSentiment = async (content) => {
   const response = await fetch(`${HUGGINGFACE_API_URL}/${HUGGINGFACE_MODEL}`, {
@@ -80,8 +93,30 @@ const getGroqSummary = async (content) => {
   return data.choices?.[0]?.message?.content?.trim() ?? null;
 };
 
-export const analyzeJournal = async (content) => {
+export const analyzeJournal = async (content, journalId) => {
   try {
+    if (journalId) {
+      const [cachedSummary, cachedMood] = await Promise.all([
+        getCache(`summary:${journalId}`),
+        getCache(`mood:${journalId}`),
+      ]);
+
+      if (cachedSummary !== null && cachedMood !== null) {
+        return {
+          sentiment: cachedMood.sentiment,
+          moodScore: cachedMood.moodScore,
+          summary: cachedSummary,
+        };
+      }
+    }
+
+    const cacheKey = buildAiCacheKey(content);
+    const cachedResult = await getCache(cacheKey);
+
+    if (cachedResult !== null) {
+      return cachedResult;
+    }
+
     const [sentimentResult, summary] = await Promise.all([
       getHuggingFaceSentiment(content),
       getGroqSummary(content),
@@ -92,6 +127,19 @@ export const analyzeJournal = async (content) => {
       moodScore: sentimentResult.moodScore,
       summary,
     };
+
+    await setCache(cacheKey, result, AI_CACHE_TTL);
+
+    if (journalId) {
+      await Promise.all([
+        setCache(`summary:${journalId}`, result.summary, AI_CACHE_TTL),
+        setCache(
+          `mood:${journalId}`,
+          { sentiment: result.sentiment, moodScore: result.moodScore },
+          AI_CACHE_TTL
+        ),
+      ]);
+    }
 
     console.log("AI Analysis Result:", result);
     return result;

@@ -1,8 +1,23 @@
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { Journal } from "../models/journal.model.js";
+import { getCache, setCache } from "../utils/cache.js";
+
+const ANALYTICS_TTL = 180;
 
 const getMoodTrends = asyncHandler(async (req, res) => {
+  const userId = String(req.user._id);
+  const cacheKey = `analytics:${userId}:mood-trends`;
+  const cachedMoodTrends = await getCache(cacheKey);
+
+  if (cachedMoodTrends !== null) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Mood trends retrieved successfully", cachedMoodTrends)
+      );
+  }
+
   const moodTrend = await Journal.aggregate([
     {
       $match: {
@@ -37,6 +52,8 @@ const getMoodTrends = asyncHandler(async (req, res) => {
     },
   ]);
 
+  await setCache(cacheKey, moodTrend, ANALYTICS_TTL);
+
   res
     .status(200)
     .json(
@@ -45,6 +62,22 @@ const getMoodTrends = asyncHandler(async (req, res) => {
 });
 
 const getSentimentDistribution = asyncHandler(async (req, res) => {
+  const userId = String(req.user._id);
+  const cacheKey = `analytics:${userId}:sentiment-distribution`;
+  const cachedSentiment = await getCache(cacheKey);
+
+  if (cachedSentiment !== null) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(
+          200,
+          "Sentiment distribution retrieved successfully",
+          cachedSentiment
+        )
+      );
+  }
+
   const sentiment = await Journal.aggregate([
     {
       $match: {
@@ -67,6 +100,8 @@ const getSentimentDistribution = asyncHandler(async (req, res) => {
     },
   ]);
 
+  await setCache(cacheKey, sentiment, ANALYTICS_TTL);
+
   res
     .status(200)
     .json(
@@ -79,6 +114,16 @@ const getSentimentDistribution = asyncHandler(async (req, res) => {
 });
 
 const getTagsDistribution=asyncHandler(async (req, res) => {
+    const userId = String(req.user._id);
+    const cacheKey = `analytics:${userId}:tags-distribution`;
+    const cachedTags = await getCache(cacheKey);
+
+    if (cachedTags !== null) {
+      return res.status(200).json(
+        new ApiResponse(200, "Tags distribution retrieved successfully", cachedTags)
+      );
+    }
+
     const tagsDistribution=await Journal.aggregate([
         {$match: {
             owner: req.user._id,
@@ -99,12 +144,25 @@ const getTagsDistribution=asyncHandler(async (req, res) => {
             }
         }
     ]);
+
+    await setCache(cacheKey, tagsDistribution, ANALYTICS_TTL);
+
     res.status(200).json(
       new ApiResponse(200, "Tags distribution retrieved successfully", tagsDistribution)
     );
 });
 
 const getAverageMoodByTag = asyncHandler(async (req, res) => {
+  const userId = String(req.user._id);
+  const cacheKey = `analytics:${userId}:average-mood-by-tag`;
+  const cachedMoodByTag = await getCache(cacheKey);
+
+  if (cachedMoodByTag !== null) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Average mood by tag fetched", cachedMoodByTag));
+  }
+
   const moodByTag = await Journal.aggregate([
     {
       $match: {
@@ -128,6 +186,8 @@ const getAverageMoodByTag = asyncHandler(async (req, res) => {
       },
     },
   ]);
+
+  await setCache(cacheKey, moodByTag, ANALYTICS_TTL);
 
   res.status(200).json(
     new ApiResponse(200, "Average mood by tag fetched", moodByTag)

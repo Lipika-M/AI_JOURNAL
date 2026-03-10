@@ -5,6 +5,10 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { Schema } from "mongoose";
 import { analyzeJournal } from "../services/ai.service.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
+import { getCache, setCache, invalidateJournalCache } from "../utils/cache.js";
+
+const JOURNAL_LIST_TTL = 120;
+const JOURNAL_DETAIL_TTL = 300;
 
 const normalizeTags = (tags) => {
   if (Array.isArray(tags)) {
@@ -84,12 +88,14 @@ const createJournal = asyncHandler(async (req, res) => {
     aiStatus: "pending",
   });
 
+  await invalidateJournalCache(String(req.user._id), String(journal._id));
+
   res
     .status(201)
     .json(new ApiResponse(201, "Journal created successfully", journal));
 
   // Run AI analysis asynchronously in the background
-  analyzeJournal(journal.content)
+  analyzeJournal(journal.content, String(journal._id))
     .then(async (aiResult) => {
       await Journal.findByIdAndUpdate(journal._id, {
         sentiment: aiResult.sentiment,
@@ -204,12 +210,14 @@ const updateJournal = asyncHandler(async (req, res) => {
   Object.assign(existingJournal, updateFields);
   const updatedJournal = await existingJournal.save({ validateBeforeSave: true });
 
+  await invalidateJournalCache(String(req.user._id), String(updatedJournal._id));
+
   res
     .status(200)
     .json(new ApiResponse(200, "Journal updated successfully", updatedJournal));
 
   if (hasContentUpdate) {
-    analyzeJournal(updateFields.content)
+    analyzeJournal(updateFields.content, String(updatedJournal._id))
       .then(async (aiResult) => {
         await Journal.findByIdAndUpdate(updatedJournal._id, {
           sentiment: aiResult.sentiment,
@@ -227,10 +235,23 @@ const updateJournal = asyncHandler(async (req, res) => {
 });
 
 const getAllJournals = asyncHandler(async (req, res) => {
+  const userId = String(req.user._id);
+  const cacheKey = `journals:${userId}:list`;
+  const cachedJournals = await getCache(cacheKey);
+
+  if (cachedJournals !== null) {
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(200, "Journals retrieved successfully", cachedJournals)
+      );
+  }
+
   const journals = await Journal.find({
     owner: req.user._id,
     isDeleted: false,
   }).sort({ createdAt: -1 });
+  await setCache(cacheKey, journals, JOURNAL_LIST_TTL);
   res
     .status(200)
     .json(new ApiResponse(200, "Journals retrieved successfully", journals));
@@ -248,6 +269,16 @@ const getJournalById = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid journal ID");
   }
 
+  const userId = String(req.user._id);
+  const cacheKey = `journals:${userId}:detail:${journalId}`;
+  const cachedJournal = await getCache(cacheKey);
+
+  if (cachedJournal !== null) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Journal retrieved successfully", cachedJournal));
+  }
+
   const journal = await Journal.findOne({
     _id: journalId,
     owner: req.user._id,
@@ -259,6 +290,9 @@ const getJournalById = asyncHandler(async (req, res) => {
       "Journal not found or you are not authorized to view it"
     );
   }
+
+  await setCache(cacheKey, journal, JOURNAL_DETAIL_TTL);
+
   res
     .status(200)
     .json(new ApiResponse(200, "Journal retrieved successfully", journal));
@@ -296,6 +330,9 @@ const deleteJournal = asyncHandler(async (req, res) => {
   if (!deletedJournal) {
     throw new ApiError(404, "Journal not found or unauthorized");
   }
+
+  await invalidateJournalCache(String(req.user._id), String(journalId));
+
   res.status(200).json(new ApiResponse(200, "Journal deleted successfully"));
 });
 
