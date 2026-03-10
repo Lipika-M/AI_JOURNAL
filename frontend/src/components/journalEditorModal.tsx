@@ -1,6 +1,7 @@
 import { useState, useEffect, type ChangeEvent, type FormEvent } from 'react';
 import journalApi from '../api/journal.api';
 import type { Journal } from '../types/journal.type';
+import { getSafeErrorMessage } from '../utils/safeErrorMessage';
 
 interface Props {
   onClose: () => void;
@@ -112,8 +113,10 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
       onClose();
     } catch (err: any) {
       setError(
-        err.response?.data?.message ||
+        getSafeErrorMessage(
+          err,
           `Failed to ${isEditMode ? 'update' : 'create'} journal`
+        )
       );
       console.error(`Error ${isEditMode ? 'updating' : 'creating'} journal:`, err);
     } finally {

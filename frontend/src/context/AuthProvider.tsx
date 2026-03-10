@@ -3,6 +3,7 @@ import authApi from "../api/auth.api";
 import type { User } from "../types/user.type";
 import { AuthContext } from "./authContext";
 import type { AuthContextType } from "../types/auth.type";
+import { getSafeErrorMessage } from "../utils/safeErrorMessage";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
  
@@ -10,36 +11,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const getAuthErrorMessage = (err: unknown, fallback: string) => {
-    const axiosLikeError = err as {
-      response?: { status?: number; data?: { message?: string } };
-      message?: string;
-    };
-
-    const statusCode = axiosLikeError?.response?.status;
-    const serverMessage = axiosLikeError?.response?.data?.message?.trim();
-    const rawMessage = axiosLikeError?.message?.trim();
-
-    if (serverMessage && !/status code\s*\d+/i.test(serverMessage)) {
-      return serverMessage;
-    }
-
-    if (statusCode === 400) return "Please check your input and try again.";
-    if (statusCode === 401) return "Invalid credentials. Please try again.";
-    if (statusCode === 403) return "You are not allowed to perform this action.";
-    if (statusCode === 404) return "Account not found.";
-    if (statusCode === 409) return "This account information is already in use.";
-    if (statusCode === 429) return "Too many attempts. Please wait and try again.";
-    if (statusCode && statusCode >= 500)
-      return "Server error. Please try again in a moment.";
-
-    if (rawMessage && !/status code\s*\d+/i.test(rawMessage)) {
-      return rawMessage;
-    }
-
-    return fallback;
-  };
 
    useEffect(() => {
     const checkAuth = async () => {
@@ -81,7 +52,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(response.message || "Registration failed");
       }
     } catch (err) {
-      const errorMessage = getAuthErrorMessage(
+      const errorMessage = getSafeErrorMessage(
         err,
         "Registration failed. Please try again."
       );
@@ -108,7 +79,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error(response.message || "Login failed");
       }
     } catch (err) {
-      const errorMessage = getAuthErrorMessage(
+      const errorMessage = getSafeErrorMessage(
         err,
         "Login failed. Please try again."
       );
@@ -127,7 +98,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(null);
       setIsAuthenticated(false);
     } catch (err) {
-      const errorMessage = getAuthErrorMessage(
+      const errorMessage = getSafeErrorMessage(
         err,
         "Logout failed. Please try again."
       );

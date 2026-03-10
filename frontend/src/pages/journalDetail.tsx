@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import journalApi from "../api/journal.api";
 import type { Journal } from "../types/journal.type";
 import JournalEditorModal from "../components/journalEditorModal";
+import { getSafeErrorMessage } from "../utils/safeErrorMessage";
 
 const JournalDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -33,7 +34,7 @@ const JournalDetail = () => {
       const response = await journalApi.getJournalById(id!);
       setJournal(response.data);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to fetch journal");
+      setError(getSafeErrorMessage(err, "Failed to fetch journal"));
       console.error("Error fetching journal:", err);
     } finally {
       setIsLoading(false);
@@ -46,7 +47,7 @@ const JournalDetail = () => {
       await journalApi.deleteJournal(id!);
       navigate("/dashboard");
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to delete journal");
+      setError(getSafeErrorMessage(err, "Failed to delete journal"));
       console.error("Error deleting journal:", err);
       setIsDeleting(false);
     }
@@ -81,7 +82,7 @@ const JournalDetail = () => {
       await fetchJournal();
       setImageUploadSuccess("Images uploaded successfully");
     } catch (err: any) {
-      setImageUploadError(err.response?.data?.message || "Failed to upload images");
+      setImageUploadError(getSafeErrorMessage(err, "Failed to upload images"));
     } finally {
       setIsUploadingImages(false);
     }
@@ -111,7 +112,9 @@ const JournalDetail = () => {
       await fetchJournal();
       setImageUploadSuccess("Selected images deleted successfully");
     } catch (err: any) {
-      setImageUploadError(err.response?.data?.message || "Failed to delete selected images");
+      setImageUploadError(
+        getSafeErrorMessage(err, "Failed to delete selected images")
+      );
     } finally {
       setIsDeletingImages(false);
     }
@@ -580,21 +583,21 @@ const JournalDetail = () => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="inline-flex items-center gap-2 text-lg font-semibold text-gray-900 mb-2">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-4">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-6">
+            <h3 className="mb-2 inline-flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
               <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14A1 1 0 003 19h18a1 1 0 00.89-1.47l-8.18-14a1 1 0 00-1.72 0z" />
               </svg>
               Delete Journal?
             </h3>
-            <p className="mb-6 text-slate-600">
+            <p className="mb-5 text-sm text-slate-600 sm:mb-6 sm:text-base">
               Are you sure you want to delete "{journal.title}"? This action cannot be undone.
             </p>
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
               <button
                 onClick={() => setDeleteConfirm(false)}
-                className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:h-auto sm:text-base"
                 disabled={isDeleting}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -605,7 +608,7 @@ const JournalDetail = () => {
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex h-11 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-sm text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 sm:h-auto sm:text-base"
               >
                 {isDeleting ? (
                   <>

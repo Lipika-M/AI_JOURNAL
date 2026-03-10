@@ -10,6 +10,7 @@ import analyticsApi, {
 } from "../api/analytics.api";
 import type { Journal } from "../types/journal.type";
 import JournalEditorModal from "../components/journalEditorModal";
+import { getSafeErrorMessage } from "../utils/safeErrorMessage";
 
 const Dashboard = () => {
   const isMobileViewport =
@@ -115,7 +116,7 @@ const Dashboard = () => {
       const response = await journalApi.getAllJournals();
       setJournals(response.data || []);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to fetch journals");
+      setError(getSafeErrorMessage(err, "Failed to fetch journals"));
       console.error("Error fetching journals:", err);
     } finally {
       setIsLoading(false);
@@ -167,7 +168,7 @@ const Dashboard = () => {
       setJournals(journals.filter((j) => j._id !== id));
       setDeleteConfirm(null);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to delete journal");
+      setError(getSafeErrorMessage(err, "Failed to delete journal"));
       console.error("Error deleting journal:", err);
     }
   };
@@ -177,7 +178,7 @@ const Dashboard = () => {
       await logout();
       navigate("/login");
     } catch (err: any) {
-      setError(err?.message || "Logout failed. Please try again.");
+      setError(getSafeErrorMessage(err, "Logout failed. Please try again."));
       console.error("Logout error:", err);
     }
   };
@@ -897,23 +898,23 @@ const getSentimentIcon = (sentiment?: string) => {
               )}
               {/* Top Tags */}
               {tagsDistribution.length > 0 && (
-                <div className="flex h-full min-h-[460px] flex-col rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:min-h-[520px] sm:p-8">
+                <div className="flex h-full min-h-0 flex-col rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:min-h-[520px] sm:p-8">
                   <div className="mb-5 flex items-center gap-3 sm:mb-6">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-100">
                       <svg className="w-5 h-5 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-gray-900">Top Tags</h3>
+                    <h3 className="text-base font-semibold text-gray-900 sm:text-lg">Top Tags</h3>
                   </div>
-                  <div className="space-y-2 flex-1">
+                  <div className="flex-1 space-y-1.5 sm:space-y-2">
                     {tagsDistribution.slice(0, 5).map((tag, index) => (
-                      <div key={tag.tag} className="flex items-center gap-4 rounded-xl bg-slate-50 px-4 py-3 transition-colors hover:bg-slate-100">
-                        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-slate-800 text-xs font-bold text-white">
+                      <div key={tag.tag} className="flex items-center gap-3 rounded-xl bg-slate-50 px-3 py-2.5 transition-colors hover:bg-slate-100 sm:gap-4 sm:px-4 sm:py-3">
+                        <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-slate-800 text-[11px] font-bold text-white sm:h-8 sm:w-8 sm:text-xs">
                           {index + 1}
                         </div>
-                        <span className="text-sm text-gray-800 font-medium flex-1">{tag.tag}</span>
-                        <span className="text-sm text-gray-500 whitespace-nowrap">
+                        <span className="flex-1 truncate text-sm font-medium text-gray-800">{tag.tag}</span>
+                        <span className="whitespace-nowrap text-xs text-gray-500 sm:text-sm">
                           {tag.count} {tag.count === 1 ? 'time' : 'times'}
                         </span>
                       </div>
@@ -932,22 +933,25 @@ const getSentimentIcon = (sentiment?: string) => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                   </div>
-                  <h3 className="text-lg font-semibold text-slate-800">Best Moods</h3>
+                  <h3 className="text-base font-semibold text-slate-800 sm:text-lg">Best Moods</h3>
                 </div>
-                <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-5">
+                <div className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 sm:mx-0 sm:grid sm:grid-cols-2 sm:gap-4 sm:overflow-visible sm:px-0 sm:pb-0 md:grid-cols-3 lg:grid-cols-5">
                   {topTagsByMood.map((tag) => (
-                    <div key={tag.tag} className="bg-white/70 rounded-xl p-4 border border-white/60">
-                      <div className="mb-3 inline-flex h-14 min-w-24 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-3 shadow-sm">
-                        <span className="text-2xl font-bold text-slate-800">
+                    <div key={tag.tag} className="min-w-[140px] shrink-0 snap-start rounded-xl border border-white/60 bg-white/70 p-3 sm:min-w-0 sm:p-4">
+                      <div className="mb-2 inline-flex h-12 min-w-20 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-3 shadow-sm sm:mb-3 sm:h-14 sm:min-w-24">
+                        <span className="text-xl font-bold text-slate-800 sm:text-2xl">
                           {Math.round(tag.averageMood * 100)}%
                         </span>
                       </div>
-                      <div className="text-sm text-slate-700 font-medium truncate">
+                      <div className="truncate text-xs font-medium text-slate-700 sm:text-sm">
                         {tag.tag}
                       </div>
                     </div>
                   ))}
                 </div>
+                <p className="mt-2 text-xs text-slate-500 sm:hidden">
+                  swipe for more -&gt;
+                </p>
               </div>
             )}
 
@@ -1180,21 +1184,21 @@ const getSentimentIcon = (sentiment?: string) => {
 
       {/* Delete Confirmation Modal */}
       {deleteConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-6 shadow-2xl">
-            <h3 className="mb-2 inline-flex items-center gap-2 text-lg font-semibold text-gray-900">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-3 backdrop-blur-sm sm:p-4">
+          <div className="w-full max-w-sm rounded-xl border border-slate-200 bg-white p-4 shadow-2xl sm:p-6">
+            <h3 className="mb-2 inline-flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
               <svg className="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10.29 3.86l-8.18 14A1 1 0 003 19h18a1 1 0 00.89-1.47l-8.18-14a1 1 0 00-1.72 0z" />
               </svg>
               Delete Entry?
             </h3>
-            <p className="text-gray-600 text-sm mb-6">
+            <p className="mb-5 text-sm text-gray-600 sm:mb-6">
               This action cannot be undone. The journal entry will be permanently deleted.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 font-medium text-slate-600 transition-all duration-300 hover:bg-slate-100 hover:text-slate-900"
+                className="flex h-11 w-full flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium text-slate-600 transition-all duration-300 hover:bg-slate-100 hover:text-slate-900 sm:h-auto sm:text-base"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1203,7 +1207,7 @@ const getSentimentIcon = (sentiment?: string) => {
               </button>
               <button
                 onClick={() => handleDeleteJournal(deleteConfirm)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 font-medium text-white transition-all duration-300 hover:bg-red-700"
+                className="flex h-11 w-full flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition-all duration-300 hover:bg-red-700 sm:h-auto sm:text-base"
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a2 2 0 002 2h4a2 2 0 002-2V7" />
