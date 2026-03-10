@@ -14,13 +14,13 @@ const NotFound = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-[#f7f7f7] px-4 py-8 sm:py-10">
       <div className="w-full max-w-md text-center">
         {/* 404 Illustration */}
-        <div className="mb-8">
+        <div className="mb-6 sm:mb-8">
           <div className="inline-block">
             <svg
-              className="w-32 h-32 text-stone-400 mx-auto"
+              className="mx-auto h-24 w-24 text-stone-400 sm:h-32 sm:w-32"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -36,15 +36,15 @@ const NotFound = () => {
         </div>
 
         {/* Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
           {/* 404 Text */}
-          <h1 className="text-6xl font-bold text-gray-800 mb-2">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+          <h1 className="mb-2 text-5xl font-bold text-gray-800 sm:text-6xl">404</h1>
+          <h2 className="mb-3 text-xl font-semibold text-gray-800 sm:mb-4 sm:text-2xl">
             Page Not Found
           </h2>
 
           {/* Description */}
-          <p className="text-gray-600 mb-8">
+          <p className="mb-6 text-sm text-gray-600 sm:mb-8 sm:text-base">
             Oops! The page you're looking for doesn't exist. It might have been
             moved or deleted.
           </p>
@@ -53,7 +53,7 @@ const NotFound = () => {
           <div className="space-y-3">
             <button
               onClick={handleGoHome}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 font-medium text-white transition hover:bg-slate-800"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 sm:h-12 sm:text-base"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14m-6-6 6 6-6 6" />
@@ -62,7 +62,7 @@ const NotFound = () => {
             </button>
             <button
               onClick={() => navigate(-1)}
-              className="w-full inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+              className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 sm:h-12 sm:text-base"
             >
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -73,7 +73,7 @@ const NotFound = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-slate-600">
+        <div className="mt-5 px-2 text-center text-xs text-slate-600 sm:mt-6 sm:text-sm">
           <p>If you think this is a mistake, please contact support</p>
         </div>
       </div>

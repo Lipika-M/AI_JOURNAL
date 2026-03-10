@@ -125,8 +125,8 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
     <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <div className="bg-white/70 backdrop-blur-md rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-white/60">
         {/* Header */}
-        <div className="sticky top-0 bg-white/70 backdrop-blur-md border-b border-white/60 px-6 py-4 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-900">
+        <div className="sticky top-0 bg-white/70 backdrop-blur-md border-b border-white/60 px-4 py-3 sm:px-6 sm:py-4 flex justify-between items-center">
+          <h2 className="text-xl font-bold text-gray-900 sm:text-2xl">
             {isEditMode ? 'Edit Journal' : 'Create New Journal'}
           </h2>
           <button
@@ -147,7 +147,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
 
         {/* Error Alert */}
         {error && (
-          <div className="mx-6 mt-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="mx-4 mt-4 rounded-lg border border-red-200 bg-red-50 p-4 sm:mx-6">
             <div className="flex items-start">
               <svg
                 className="h-5 w-5 text-red-400 mt-0.5"
@@ -168,7 +168,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4 p-4 sm:p-6">
           {/* Title Field */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
@@ -181,7 +181,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
               value={formData.title}
               onChange={handleChange}
               placeholder="Give your journal a title"
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
+              className={`h-11 w-full rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition sm:h-12 sm:text-base ${
                 formErrors.title
                   ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-blue-500'
@@ -201,11 +201,11 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
             <textarea
               id="content"
               name="content"
-              rows={15}
+              rows={12}
               value={formData.content}
               onChange={handleChange}
               placeholder="Start writing your thoughts..."
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition resize-none ${
+              className={`min-h-[220px] w-full resize-none rounded-lg border px-4 py-3 text-sm focus:outline-none focus:ring-2 transition sm:min-h-[260px] sm:text-base ${
                 formErrors.content
                   ? 'border-red-500 focus:ring-red-500'
                   : 'border-gray-300 focus:ring-blue-500'
@@ -229,7 +229,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
               value={formData.tags}
               onChange={handleChange}
               placeholder="work, personal, ideas (comma separated)"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+              className="h-11 w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition sm:h-12 sm:text-base"
               disabled={isLoading}
             />
             <p className="mt-1 text-xs text-gray-500">Separate tags with commas</p>
@@ -247,7 +247,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
               multiple
               accept="image/png,image/jpeg,image/jpg,image/webp"
               onChange={handleImageChange}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-slate-100 file:px-3 file:py-1.5 file:text-slate-700 hover:file:bg-slate-200"
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm file:mr-2 file:rounded-md file:border-0 file:bg-slate-100 file:px-2.5 file:py-1.5 file:text-slate-700 hover:file:bg-slate-200 sm:file:mr-3 sm:file:px-3"
               disabled={isLoading}
             />
             <p className="mt-1 text-xs text-gray-500">
@@ -264,11 +264,11 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-3 justify-end pt-4">
+          <div className="flex flex-col-reverse gap-2 pt-3 sm:flex-row sm:justify-end sm:gap-3 sm:pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 px-6 py-2 transition"
+              className="rounded-xl px-6 py-2 text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600"
               disabled={isLoading}
             >
               Cancel
@@ -276,7 +276,7 @@ const JournalEditorModal = ({ onClose, onSuccess, journal }: Props) => {
             <button
               type="submit"
               disabled={isLoading}
-              className="bg-slate-900 hover:bg-slate-800 text-white rounded-xl px-6 py-2 font-medium transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="flex items-center justify-center gap-2 rounded-xl bg-slate-900 px-6 py-2 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {isLoading ? (
                 <>

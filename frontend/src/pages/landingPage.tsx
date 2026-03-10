@@ -145,20 +145,20 @@ const LandingPage = () => {
             </nav>
           </header>
 
-          <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-7xl items-center px-4 pb-14 pt-24 sm:px-6 sm:pb-16 sm:pt-28 md:min-h-[95vh] md:px-12 md:pb-24 md:pt-36">
+          <div className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-7xl items-center px-4 pb-12 pt-22 sm:px-6 sm:pb-16 sm:pt-28 md:min-h-[95vh] md:px-12 md:pb-24 md:pt-36">
             <div className="max-w-3xl text-left">
-              <h1 className="text-3xl font-semibold leading-tight tracking-tight text-white drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:text-4xl md:text-6xl">
+              <h1 className="text-2xl font-semibold leading-tight tracking-tight text-white drop-shadow-[0_8px_24px_rgba(0,0,0,0.45)] sm:text-4xl md:text-6xl">
                 Find clarity through
                 <span className="block">mindful reflection</span>
               </h1>
-              <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/92 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:mt-6 sm:text-lg md:text-2xl">
+              <p className="mt-4 max-w-2xl text-sm leading-relaxed text-white/92 drop-shadow-[0_6px_18px_rgba(0,0,0,0.35)] sm:mt-6 sm:text-lg md:text-2xl">
                 Capture your thoughts, understand your emotions, and gain insights with AI-powered
                 journaling designed for mental clarity.
               </p>
               <div className="mt-8 sm:mt-10">
                 <button
                   onClick={() => navigate("/register")}
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-sm border border-slate-300 bg-slate-100 px-6 py-3 text-base font-semibold text-slate-900 shadow-[0_20px_40px_-22px_rgba(0,0,0,0.85)] transition hover:bg-slate-200 sm:w-auto sm:px-10 sm:py-4 sm:text-xl"
+                  className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-sm border border-slate-300 bg-slate-100 px-6 py-3 text-sm font-semibold text-slate-900 shadow-[0_20px_40px_-22px_rgba(0,0,0,0.85)] transition hover:bg-slate-200 sm:h-auto sm:w-auto sm:px-10 sm:py-4 sm:text-xl"
                 >
                   <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden="true">
                     <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -174,7 +174,7 @@ const LandingPage = () => {
           id="features"
           className="relative z-20 mx-auto mt-8 w-full max-w-6xl rounded-t-[2rem] border border-slate-200/80 bg-white px-4 pt-16 pb-16 sm:px-6 md:mt-12 md:px-10 md:pt-20 md:pb-20"
         >
-          <h2 className="text-center text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl md:text-5xl lg:text-6xl">
+          <h2 className="text-center text-xl font-semibold tracking-tight text-slate-900 sm:text-3xl md:text-5xl lg:text-6xl">
             Everything you need for meaningful journaling
           </h2>
           <p className="mx-auto mt-3 max-w-3xl text-center text-sm text-slate-600 sm:mt-4 sm:text-base md:text-lg">
@@ -211,7 +211,7 @@ const LandingPage = () => {
                 </svg>
                 Track Your Progress
               </span>
-              <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:mt-5 sm:text-4xl md:text-5xl">
+              <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-tight text-slate-900 sm:mt-5 sm:text-4xl md:text-5xl">
                 Understand your emotional patterns
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:mt-6 sm:text-base md:text-lg">
@@ -255,7 +255,7 @@ const LandingPage = () => {
                 </svg>
                 AI-Powered Insights
               </span>
-              <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-slate-900 sm:mt-5 sm:text-4xl md:text-5xl">
+              <h2 className="mt-4 text-2xl font-semibold leading-tight tracking-tight text-slate-900 sm:mt-5 sm:text-4xl md:text-5xl">
                 Get personalized reflections
               </h2>
               <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:mt-6 sm:text-base md:text-lg">
@@ -283,7 +283,7 @@ const LandingPage = () => {
           className="mx-auto mt-8 w-full max-w-6xl border-t border-slate-200 px-4 pt-16 pb-16 sm:px-6 md:mt-12 md:px-10 md:pt-20 md:pb-20"
         >
           <div className="rounded-[2rem] border border-slate-200 bg-gradient-to-r from-white to-slate-100 px-5 py-12 text-center shadow-[0_28px_55px_-32px_rgba(15,23,42,0.2)] sm:px-8 sm:py-14 md:px-14 md:py-16">
-            <h2 className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl md:text-5xl">
+            <h2 className="text-xl font-semibold tracking-tight text-slate-900 sm:text-3xl md:text-5xl">
               Start your journaling journey today
             </h2>
             <p className="mx-auto mt-4 max-w-3xl text-sm leading-relaxed text-slate-600 sm:mt-5 sm:text-base md:text-lg">

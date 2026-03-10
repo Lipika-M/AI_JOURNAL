@@ -208,10 +208,10 @@ const JournalDetail = () => {
       <div className="min-h-screen bg-[#f7f7f7] text-slate-900">
         <nav className="border-b border-slate-200 bg-white/90 backdrop-blur-md">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between items-center h-16">
+            <div className="flex h-14 items-center justify-between sm:h-16">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:text-base"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path
@@ -227,8 +227,8 @@ const JournalDetail = () => {
           </div>
         </nav>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <div className="rounded-2xl border border-slate-200 bg-white p-5 text-center shadow-sm sm:p-8">
             <div className="text-red-600 mb-4">
               <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -239,7 +239,7 @@ const JournalDetail = () => {
                 />
               </svg>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Journal Not Found</h1>
+            <h1 className="mb-2 text-xl font-bold text-gray-900 sm:text-2xl">Journal Not Found</h1>
             <p className="text-gray-600 mb-6">
               {error || "The journal you're looking for doesn't exist."}
             </p>
@@ -274,10 +274,10 @@ const JournalDetail = () => {
       {/* Navigation Bar */}
       <nav className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-md">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex flex-col gap-3 py-3 sm:flex-row sm:items-center sm:justify-between sm:py-2">
             <button
               onClick={() => navigate("/dashboard")}
-              className="inline-flex items-center gap-2 rounded-xl px-3 py-1.5 font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+              className="inline-flex w-fit items-center gap-2 rounded-xl px-3 py-1.5 text-sm font-medium text-slate-600 transition hover:bg-slate-100 hover:text-slate-900 sm:text-base"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -289,22 +289,27 @@ const JournalDetail = () => {
               </svg>
               Back
             </button>
-            <div className="flex gap-2">
+            <div className="flex w-full flex-wrap gap-2 sm:w-auto sm:flex-nowrap">
               <button
                 onClick={handleAddImagesClick}
                 disabled={isUploadingImages}
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-100 px-4 py-2 font-medium text-slate-700 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-100 px-3 py-2 text-xs font-medium text-slate-700 shadow-sm transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-4 sm:text-base"
               >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg className="h-5 w-5 sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2" strokeWidth={2} />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 14l2.5-2.5a1 1 0 011.414 0L15 14" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9v4M15 11h4" />
+                </svg>
+                <svg className="hidden h-5 w-5 sm:block" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2 1.586-1.586a2 2 0 012.828 0L20 14M14 8h.01M12 4v8m4-4H8" />
                 </svg>
-                {isUploadingImages ? "Uploading..." : "Add Images"}
+                {isUploadingImages ? "Uploading..." : <span className="sm:inline">Add Images</span>}
               </button>
               {selectedImagePublicIds.length > 0 && (
                 <button
                   onClick={handleDeleteSelectedImages}
                   disabled={isDeletingImages}
-                  className="inline-flex items-center gap-2 rounded-xl bg-red-100 px-4 py-2 font-medium text-red-700 shadow-sm transition hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-100 px-3 py-2 text-xs font-medium text-red-700 shadow-sm transition hover:bg-red-200 disabled:cursor-not-allowed disabled:opacity-60 sm:flex-none sm:px-4 sm:text-base"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 7h12M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2m-7 0v12a2 2 0 002 2h4a2 2 0 002-2V7" />
@@ -314,7 +319,7 @@ const JournalDetail = () => {
               )}
               <button
                 onClick={() => setShowEditorModal(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-slate-800"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-3 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-slate-800 sm:flex-none sm:px-4 sm:text-base"
               >
                 <svg
                   className="w-5 h-5"
@@ -333,7 +338,7 @@ const JournalDetail = () => {
               </button>
               <button
                 onClick={() => setDeleteConfirm(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 font-medium text-white shadow-sm transition hover:bg-red-700"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-red-600 px-3 py-2 text-xs font-medium text-white shadow-sm transition hover:bg-red-700 sm:flex-none sm:px-4 sm:text-base"
               >
                 <svg
                   className="w-5 h-5"
@@ -364,7 +369,7 @@ const JournalDetail = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Error Alert */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -400,11 +405,11 @@ const JournalDetail = () => {
         )}
 
         {/* Journal Header */}
-        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <h1 className="mb-4 text-4xl font-semibold text-slate-900">{journal.title}</h1>
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
+          <h1 className="mb-4 break-words text-2xl font-semibold text-slate-900 sm:text-4xl">{journal.title}</h1>
 
           {/* Meta Information */}
-          <div className="mb-6 flex flex-wrap gap-4 border-b border-slate-200 pb-6 text-sm text-slate-600">
+          <div className="mb-5 flex flex-wrap gap-3 border-b border-slate-200 pb-5 text-xs text-slate-600 sm:mb-6 sm:gap-4 sm:pb-6 sm:text-sm">
             <div className="flex items-center gap-2">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
@@ -447,7 +452,7 @@ const JournalDetail = () => {
                   </p>
                 )}
               </div>
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                 {journal.images.map((image) => (
                   <button
                     key={image.publicId}
@@ -462,7 +467,7 @@ const JournalDetail = () => {
                     <img
                       src={image.url}
                       alt="Journal attachment"
-                      className="h-56 w-full object-cover"
+                      className="h-40 w-full object-cover sm:h-56"
                     />
                     <span
                       className={`absolute right-3 top-3 inline-flex h-6 w-6 items-center justify-center rounded-full border text-xs font-bold ${
@@ -482,23 +487,23 @@ const JournalDetail = () => {
         </div>
 
         {/* Journal Content */}
-        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mb-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
           <div className="prose prose-lg max-w-none">
-            <p className="whitespace-pre-wrap leading-relaxed text-slate-700">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700 sm:text-base">
               {journal.content}
             </p>
           </div>
         </div>
 
         {/* Detailed Analysis */}
-        <section className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
-          <div className="mb-6 flex items-center gap-3">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-8">
+          <div className="mb-5 flex items-center gap-3 sm:mb-6">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-slate-900 shadow-sm">
               <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-6h3v6m3 0V7h3v10M3 17V9h3v8" />
               </svg>
             </div>
-            <h2 className="text-2xl font-semibold text-slate-900">Detailed Analysis</h2>
+            <h2 className="text-xl font-semibold text-slate-900 sm:text-2xl">Detailed Analysis</h2>
           </div>
 
           <div className="mb-6 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -564,9 +569,9 @@ const JournalDetail = () => {
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 sm:p-5">
             <h3 className="mb-2 text-base font-semibold text-slate-900">AI Summary</h3>
-            <p className="leading-relaxed text-slate-700">
+            <p className="text-sm leading-relaxed text-slate-700 sm:text-base">
               {journal.summary || "Summary is not available yet. Analysis may still be processing."}
             </p>
           </div>
@@ -586,10 +591,10 @@ const JournalDetail = () => {
             <p className="mb-6 text-slate-600">
               Are you sure you want to delete "{journal.title}"? This action cannot be undone.
             </p>
-            <div className="flex gap-3 justify-end">
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end sm:gap-3">
               <button
                 onClick={() => setDeleteConfirm(false)}
-                className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+                className="inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
                 disabled={isDeleting}
               >
                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -600,7 +605,7 @@ const JournalDetail = () => {
               <button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2 text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isDeleting ? (
                   <>

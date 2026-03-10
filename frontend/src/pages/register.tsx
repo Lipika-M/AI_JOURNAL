@@ -114,16 +114,16 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f7f7] flex items-center justify-center px-4 py-8">
+    <div className="flex min-h-screen items-center justify-center bg-[#f7f7f7] px-4 py-8 sm:py-10">
       <div className="w-full max-w-md">
         {/* Card */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
           {/* Header */}
-          <div className="text-center mb-8">
-            <h1 className="mb-2 text-4xl font-semibold text-slate-900">
+          <div className="mb-6 text-center sm:mb-8">
+            <h1 className="mb-2 text-3xl font-semibold text-slate-900 sm:text-4xl">
               Solace
             </h1>
-            <p className="text-slate-600">Create your account to get started</p>
+            <p className="text-sm text-slate-600 sm:text-base">Create your account to get started</p>
           </div>
 
           {/* Error Alert */}
@@ -167,7 +167,7 @@ const Register = () => {
                 value={formData.fullName}
                 onChange={handleChange}
                 placeholder="John Doe"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                className={`h-11 w-full rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition sm:h-12 sm:text-base ${
                   formErrors.fullName
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-slate-300 focus:ring-slate-400'
@@ -194,7 +194,7 @@ const Register = () => {
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="john@example.com"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                className={`h-11 w-full rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition sm:h-12 sm:text-base ${
                   formErrors.email
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-slate-300 focus:ring-slate-400'
@@ -221,7 +221,7 @@ const Register = () => {
                 value={formData.userName}
                 onChange={handleChange}
                 placeholder="john_doe"
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition ${
+                className={`h-11 w-full rounded-lg border px-4 py-2.5 text-sm focus:outline-none focus:ring-2 transition sm:h-12 sm:text-base ${
                   formErrors.userName
                     ? 'border-red-500 focus:ring-red-500'
                     : 'border-slate-300 focus:ring-slate-400'
@@ -249,7 +249,7 @@ const Register = () => {
                   value={formData.password}
                   onChange={handleChange}
                   placeholder="Enter your password"
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
+                  className={`h-11 w-full rounded-lg border px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 transition sm:h-12 sm:text-base ${
                     formErrors.password
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-slate-300 focus:ring-slate-400'
@@ -320,7 +320,7 @@ const Register = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   placeholder="Confirm your password"
-                  className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 transition pr-10 ${
+                  className={`h-11 w-full rounded-lg border px-4 py-2.5 pr-10 text-sm focus:outline-none focus:ring-2 transition sm:h-12 sm:text-base ${
                     formErrors.confirmPassword
                       ? 'border-red-500 focus:ring-red-500'
                       : 'border-slate-300 focus:ring-slate-400'
@@ -381,7 +381,7 @@ const Register = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="mt-6 flex w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-6 flex h-11 w-full items-center justify-center rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50 sm:h-12 sm:text-base"
             >
               {isLoading ? (
                 <>
@@ -445,7 +445,7 @@ const Register = () => {
         </div>
 
         {/* Footer */}
-        <div className="mt-6 text-center text-sm text-slate-600">
+        <div className="mt-5 px-2 text-center text-xs text-slate-600 sm:mt-6 sm:text-sm">
           <p>By registering, you agree to our terms of service</p>
         </div>
       </div>
