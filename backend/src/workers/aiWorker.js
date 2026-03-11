@@ -6,14 +6,21 @@ import {
 } from "@aws-sdk/client-sqs";
 import mongoose from "mongoose";
 import { DB_NAME } from "../constants.js";
+import { connectRedis } from "../config/redis.js";
 import { Journal } from "../models/journal.model.js";
 import { processJournal } from "../services/ai.service.js";
 
 const sqsClient = new SQSClient({ region: process.env.AWS_REGION });
 const QUEUE_URL = process.env.SQS_QUEUE_URL;
 
-await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
-console.log("Worker: MongoDB connected");
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function initializeConnections() {
+  await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
+  console.log("Worker: MongoDB connected");
+
+  await connectRedis();
+}
 
 async function pollQueue() {
   while (true) {
@@ -51,8 +58,20 @@ async function pollQueue() {
       }
     } catch (err) {
       console.error("Worker: polling error:", err.message);
+      await sleep(2000);
     }
   }
 }
 
-pollQueue();
+async function startWorker() {
+  try {
+    await initializeConnections();
+    console.log("Worker: ready and polling SQS");
+    await pollQueue();
+  } catch (err) {
+    console.error("Worker: failed to start:", err.message);
+    process.exit(1);
+  }
+}
+
+startWorker();
