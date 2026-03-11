@@ -5,13 +5,14 @@ import {
   DeleteMessageCommand,
 } from "@aws-sdk/client-sqs";
 import mongoose from "mongoose";
+import { DB_NAME } from "../constants.js";
 import { Journal } from "../models/journal.model.js";
 import { processJournal } from "../services/ai.service.js";
 
 const sqsClient = new SQSClient({ region: process.env.AWS_REGION });
 const QUEUE_URL = process.env.SQS_QUEUE_URL;
 
-await mongoose.connect(process.env.MONGODB_URI);
+await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
 console.log("Worker: MongoDB connected");
 
 async function pollQueue() {
