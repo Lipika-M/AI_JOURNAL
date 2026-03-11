@@ -1,3 +1,4 @@
+import { SQSClient, SendMessageCommand } from "@aws-sdk/client-sqs";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Journal } from "../models/journal.model.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -6,6 +7,9 @@ import mongoose, { Schema } from "mongoose";
 import { analyzeJournal } from "../services/ai.service.js";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 import { getCache, setCache, invalidateJournalCache } from "../utils/cache.js";
+
+const sqsClient = new SQSClient({ region: process.env.AWS_REGION });
+const QUEUE_URL = process.env.SQS_QUEUE_URL;
 
 const JOURNAL_LIST_TTL = 120;
 const JOURNAL_DETAIL_TTL = 300;
@@ -90,27 +94,15 @@ const createJournal = asyncHandler(async (req, res) => {
 
   await invalidateJournalCache(String(req.user._id), String(journal._id));
 
+  const command = new SendMessageCommand({
+    QueueUrl: QUEUE_URL,
+    MessageBody: JSON.stringify({ journalId: journal._id, userId: req.user._id }),
+  });
+  await sqsClient.send(command);
+
   res
     .status(201)
-    .json(new ApiResponse(201, "Journal created successfully", journal));
-
-  // Run AI analysis asynchronously in the background
-  analyzeJournal(journal.content, String(journal._id))
-    .then(async (aiResult) => {
-      await Journal.findByIdAndUpdate(journal._id, {
-        sentiment: aiResult.sentiment,
-        moodScore: aiResult.moodScore,
-        summary: aiResult.summary,
-        aiStatus: "completed",
-      });
-       
-    })
-    .catch(async (error) => {
-      await Journal.findByIdAndUpdate(journal._id, {
-        aiStatus: "failed",
-      });
-      
-    });
+    .json(new ApiResponse(201, "Journal saved! AI summary will be processed shortly.", journal));
 });
 
 const updateJournal = asyncHandler(async (req, res) => {

@@ -93,6 +93,25 @@ const getGroqSummary = async (content) => {
   return data.choices?.[0]?.message?.content?.trim() ?? null;
 };
 
+export const processJournal = async (journal) => {
+  try {
+    await journal.updateOne({ aiStatus: "processing" });
+
+    const aiResult = await analyzeJournal(journal.content, String(journal._id));
+
+    await journal.updateOne({
+      sentiment: aiResult.sentiment,
+      moodScore: aiResult.moodScore,
+      summary: aiResult.summary,
+      aiStatus: "completed",
+    });
+  } catch (error) {
+    console.error("processJournal error:", error.message);
+    await journal.updateOne({ aiStatus: "failed" });
+    throw error;
+  }
+};
+
 export const analyzeJournal = async (content, journalId) => {
   try {
     if (journalId) {
