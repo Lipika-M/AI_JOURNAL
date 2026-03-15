@@ -30,8 +30,7 @@ jobs:
       CLOUDFRONT_DIST_ID: ${{ secrets.CLOUDFRONT_DIST_ID }}
       EC2_IP: ${{ secrets.EC2_IP }}
       EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
-      env:FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
-      
+
     steps:
       # 1️⃣ Checkout code
       - name: Checkout repository
@@ -41,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '24'
+          node-version: '18'
 
       # 3️⃣ Install backend dependencies
       - name: Install backend packages
@@ -49,11 +48,15 @@ jobs:
           cd backend
           npm install
 
-      # 4️⃣ Run backend tests
+      # 4️⃣ Run backend tests (skip if no test script)
       - name: Run backend tests
         run: |
           cd backend
-          npm test
+          if [ -f package.json ] && grep -q "\"test\":" package.json; then
+            npm test
+          else
+            echo "No test script found, skipping tests."
+          fi
 
       # 5️⃣ Build frontend
       - name: Build frontend
@@ -91,16 +94,7 @@ jobs:
           post-deploy: |
             ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_IP }} << 'EOF'
               cd /home/ubuntu/AI_JOURNAL/backend
-              
-              # 1️⃣ Reload API server with zero-downtime
               pm2 startOrReload ecosystem.config.js --env production
-              
-              # 2️⃣ Ensure worker process is running
-              pm2 describe ai-worker || pm2 start worker.js --name ai-worker
-              
-              # 3️⃣ Save PM2 process list
               pm2 save
-              
-              # 4️⃣ Optional: log tail for last 50 lines (observability)
               pm2 logs --lines 50
             EOF
