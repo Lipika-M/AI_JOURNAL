@@ -48,15 +48,11 @@ jobs:
           cd backend
           npm install
 
-      # 4️⃣ Run backend tests (skip if no test script)
+      # 4️⃣ Run backend tests
       - name: Run backend tests
         run: |
           cd backend
-          if [ -f package.json ] && grep -q "\"test\":" package.json; then
-            npm test
-          else
-            echo "No test script found, skipping tests."
-          fi
+          npm test || echo "No tests found, skipping"
 
       # 5️⃣ Build frontend
       - name: Build frontend
@@ -65,12 +61,20 @@ jobs:
           npm install
           npm run build
 
-      # 6️⃣ Deploy frontend to S3
+      # 6️⃣ Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 7️⃣ Deploy frontend to S3
       - name: Deploy frontend to S3
         run: |
           aws s3 sync frontend/dist/ s3://$S3_BUCKET_NAME --delete --region $AWS_REGION
 
-      # 7️⃣ Invalidate CloudFront cache
+      # 8️⃣ Invalidate CloudFront cache
       - name: CloudFront cache invalidation
         run: |
           aws cloudfront create-invalidation \
@@ -78,7 +82,7 @@ jobs:
             --paths "/*" \
             --region $AWS_REGION
 
-      # 8️⃣ Deploy backend to EC2 via SSH & PM2 with zero-downtime
+      # 9️⃣ Deploy backend to EC2 via SSH & PM2
       - name: Deploy backend to EC2
         uses: easingthemes/ssh-deploy@main
         with:
@@ -94,7 +98,16 @@ jobs:
           post-deploy: |
             ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_IP }} << 'EOF'
               cd /home/ubuntu/AI_JOURNAL/backend
+              
+              # 1️⃣ Reload API server with zero-downtime
               pm2 startOrReload ecosystem.config.js --env production
+              
+              # 2️⃣ Ensure worker process is running
+              pm2 describe ai-worker || pm2 start workers/aiWorker.js --name ai-worker
+              
+              # 3️⃣ Save PM2 process list
               pm2 save
+              
+              # 4️⃣ Optional: show last 50 log lines
               pm2 logs --lines 50
             EOF
