@@ -31,6 +31,7 @@ jobs:
       EC2_IP: ${{ secrets.EC2_IP }}
       EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
       env:FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+      
     steps:
       # 1️⃣ Checkout code
       - name: Checkout repository
