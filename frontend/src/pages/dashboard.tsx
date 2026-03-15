@@ -93,13 +93,23 @@ const Dashboard = () => {
 
     const interval = setInterval(async () => {
       try {
+        let shouldRefreshAnalytics = false;
+
         for (const journal of pendingJournals) {
           const response = await journalApi.getJournalById(journal._id);
+          if (response.data?.aiStatus === "completed") {
+            shouldRefreshAnalytics = true;
+          }
+
           setJournals((prev) =>
             prev.map((j) =>
               j._id === journal._id ? { ...j, ...response.data } : j
             )
           );
+        }
+
+        if (shouldRefreshAnalytics) {
+          fetchAnalytics();
         }
       } catch (err) {
         console.error("Error polling journals:", err);
@@ -166,6 +176,7 @@ const Dashboard = () => {
     try {
       await journalApi.deleteJournal(id);
       setJournals(journals.filter((j) => j._id !== id));
+      fetchAnalytics();
       setDeleteConfirm(null);
     } catch (err: any) {
       setError(getSafeErrorMessage(err, "Failed to delete journal"));
@@ -1228,6 +1239,7 @@ const getSentimentIcon = (sentiment?: string) => {
           }}
           onSuccess={() => {
             fetchJournals();
+            fetchAnalytics();
             setEditingJournal(null);
           }}
           journal={editingJournal}

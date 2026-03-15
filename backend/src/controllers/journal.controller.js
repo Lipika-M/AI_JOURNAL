@@ -217,11 +217,19 @@ const updateJournal = asyncHandler(async (req, res) => {
           summary: aiResult.summary,
           aiStatus: "completed",
         });
+        await invalidateJournalCache(
+          String(req.user._id),
+          String(updatedJournal._id)
+        );
       })
       .catch(async (error) => {
         await Journal.findByIdAndUpdate(updatedJournal._id, {
           aiStatus: "failed",
         });
+        await invalidateJournalCache(
+          String(req.user._id),
+          String(updatedJournal._id)
+        );
       });
   }
 });

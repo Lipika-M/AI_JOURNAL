@@ -1,5 +1,6 @@
 import crypto from "crypto";
 import { getCache, setCache } from "../utils/cache.js";
+import { invalidateJournalCache } from "../utils/cache.js";
 
 const HUGGINGFACE_API_URL = "https://router.huggingface.co/hf-inference/models";
 const HUGGINGFACE_MODEL =
@@ -105,9 +106,12 @@ export const processJournal = async (journal) => {
       summary: aiResult.summary,
       aiStatus: "completed",
     });
+
+    await invalidateJournalCache(String(journal.owner), String(journal._id));
   } catch (error) {
     console.error("processJournal error:", error.message);
     await journal.updateOne({ aiStatus: "failed" });
+    await invalidateJournalCache(String(journal.owner), String(journal._id));
     throw error;
   }
 };
