@@ -1,0 +1,105 @@
+name: Fullstack CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      PORT: ${{ secrets.PORT }}
+      CORS_ORIGIN: ${{ secrets.CORS_ORIGIN }}
+      MONGODB_URI: ${{ secrets.MONGODB_URI }}
+      REDIS_URL: ${{ secrets.REDIS_URL }}
+      CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+      CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+      CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+      ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+      ACCESS_TOKEN_EXPIRY: ${{ secrets.ACCESS_TOKEN_EXPIRY }}
+      REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+      REFRESH_TOKEN_EXPIRY: ${{ secrets.REFRESH_TOKEN_EXPIRY }}
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      HUGGINGFACE_API_KEY: ${{ secrets.HUGGINGFACE_API_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      SQS_QUEUE_URL: ${{ secrets.SQS_QUEUE_URL }}
+      S3_BUCKET_NAME: ${{ secrets.S3_BUCKET_NAME }}
+      CLOUDFRONT_DIST_ID: ${{ secrets.CLOUDFRONT_DIST_ID }}
+      EC2_IP: ${{ secrets.EC2_IP }}
+      EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+
+    steps:
+      # 1️⃣ Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      # 3️⃣ Install backend dependencies
+      - name: Install backend packages
+        run: |
+          cd backend
+          npm install
+
+      # 4️⃣ Run backend tests
+      - name: Run backend tests
+        run: |
+          cd backend
+          npm test
+
+      # 5️⃣ Build frontend
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+      # 6️⃣ Deploy frontend to S3
+      - name: Deploy frontend to S3
+        run: |
+          aws s3 sync frontend/dist/ s3://$S3_BUCKET_NAME --delete --region $AWS_REGION
+
+      # 7️⃣ Invalidate CloudFront cache
+      - name: CloudFront cache invalidation
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id $CLOUDFRONT_DIST_ID \
+            --paths "/*" \
+            --region $AWS_REGION
+
+      # 8️⃣ Deploy backend to EC2 via SSH & PM2 with zero-downtime
+      - name: Deploy backend to EC2
+        uses: easingthemes/ssh-deploy@main
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+          remote-user: ubuntu
+          server-ip: ${{ secrets.EC2_IP }}
+          local-path: "./backend/"
+          remote-path: "/home/ubuntu/AI_JOURNAL/backend"
+          pre-deploy: |
+            ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_IP }} \
+              'cd /home/ubuntu/AI_JOURNAL/backend && npm install'
+
+          post-deploy: |
+            ssh -i ${{ secrets.EC2_SSH_KEY }} ubuntu@${{ secrets.EC2_IP }} << 'EOF'
+              cd /home/ubuntu/AI_JOURNAL/backend
+              
+              # 1️⃣ Reload API server with zero-downtime
+              pm2 startOrReload ecosystem.config.js --env production
+              
+              # 2️⃣ Ensure worker process is running
+              pm2 describe ai-worker || pm2 start worker.js --name ai-worker
+              
+              # 3️⃣ Save PM2 process list
+              pm2 save
+              
+              # 4️⃣ Optional: log tail for last 50 lines (observability)
+              pm2 logs --lines 50
+            EOF
