@@ -58,6 +58,8 @@ jobs:
       - name: Build frontend
         run: |
           cd frontend
+          # Inject correct API URL for production
+          echo "VITE_API_BASE_URL=https://d3sz5t05wxp00y.cloudfront.net/api/v1" > .env.production
           npm install
           npm run build
 
