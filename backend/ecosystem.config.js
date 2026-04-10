@@ -24,13 +24,15 @@ export const apps = [
             SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
         },
     },
-    {
-        name: "ai-worker", // Your background AI worker
-        script: "workers/aiWorker.js",
-        watch: false,
-        env_production: {
-            NODE_ENV: "production",
-            SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
-        },
-    },
+    // Temporary deployment mode: disable SQS worker process.
+    // Keep this config for quick re-enable after AWS/SQS is available.
+    // {
+    //     name: "ai-worker", // Your background AI worker
+    //     script: "workers/aiWorker.js",
+    //     watch: false,
+    //     env_production: {
+    //         NODE_ENV: "production",
+    //         SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
+    //     },
+    // },
 ];
