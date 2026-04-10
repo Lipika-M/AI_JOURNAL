@@ -16,6 +16,7 @@ export type TagBucket = {
 	count: number;
 };
 
+
 export type AverageMoodByTag = {
 	tag: string;
 	averageMood: number;
