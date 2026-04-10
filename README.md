@@ -198,7 +198,8 @@ Suggested GitHub Actions flow for `main` branch deployments:
 
 ## Live Demo
 
-- Live Website: [https://d3sz5t05wxp00y.cloudfront.net/](https://d3sz5t05wxp00y.cloudfront.net/)
+- Live Website: [https://ai-journal-dun.vercel.app/](https://ai-journal-dun.vercel.app/)
+<!-- Previous AWS CloudFront deployment (https://d3sz5t05wxp00y.cloudfront.net/) moved to Vercel for cost optimization. -->
 - Demo Video: [https://youtu.be/TUG6KXk9c4Y](https://youtu.be/TUG6KXk9c4Y?si=47uG7v9hzXgBEoH7)
 
 [![Demo Video](https://img.youtube.com/vi/TUG6KXk9c4Y/maxresdefault.jpg)](https://youtu.be/TUG6KXk9c4Y?si=47uG7v9hzXgBEoH7)
