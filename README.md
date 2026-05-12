@@ -97,35 +97,26 @@ The design goal was to model a real distributed application with clear separatio
 ### Main System Architecture
 
 ```mermaid
-flowchart TD
+flowchart LR
         subgraph Client[Client Layer]
-                U[User Browser]
-                F[Frontend<br/>React + Vite]
-                U --> F
+                U[User Browser] --> F[Frontend<br/>React + Vite]
         end
 
         subgraph Delivery[Static Delivery Layer]
-                S3[AWS S3<br/>Static Hosting]
-                CF[CloudFront<br/>CDN + Caching]
-                S3 --> CF
+                S3[AWS S3<br/>Static Hosting] --> CF[CloudFront<br/>CDN + Caching]
         end
 
         subgraph Runtime[Application Runtime]
-                N[Nginx<br/>Reverse Proxy]
-                API[EC2<br/>Node.js + Express API via PM2]
-                N --> API
+                N[Nginx<br/>Reverse Proxy] --> API[EC2<br/>Node.js + Express API via PM2]
         end
 
         subgraph Data[Data and Async Processing]
                 DB[MongoDB Atlas<br/>Primary Database]
                 R[Redis<br/>Analytics Cache]
-                Q[AWS SQS<br/>AI Job Queue]
-                W[Worker<br/>AI Processing]
-                Q --> W
+                Q[AWS SQS<br/>AI Job Queue] --> W[Worker<br/>AI Processing]
         end
 
-        F --> S3
-        CF --> N
+        F --> S3 --> N --> API
         API --> DB
         API --> R
         API --> Q
@@ -135,39 +126,23 @@ flowchart TD
 ### Deployment Flow
 
 ```mermaid
-flowchart TD
-        subgraph Frontend[Frontend Delivery]
-                A[Frontend Build] --> B[Upload Static Assets to S3]
-                B --> C[CloudFront Cache Distribution]
-        end
-
-        subgraph Backend[Backend Runtime]
-                D[Nginx Reverse Proxy] --> E[Backend API on EC2]
-        end
-
-        C --> D
+flowchart LR
+    A[Frontend Build] --> B[Upload Static Assets to S3] --> C[CloudFront Cache Distribution] --> D[Nginx Reverse Proxy] --> E[Backend API on EC2]
 ```
 
-### Optional CI/CD Pipeline
+### CI/CD Pipeline
 
 ```mermaid
-flowchart TD
-        subgraph Build[Build and Validation]
-                A[Push to main] --> B[Checkout repository]
-                B --> C[Install backend dependencies]
-                C --> D[Run backend checks and tests]
-                D --> E[Build frontend with Vite]
-        end
+flowchart LR
+    subgraph Build[Build and Validation]
+        A[Push to main] --> B[Checkout repository] --> C[Install backend dependencies] --> D[Run backend checks and tests] --> E[Build frontend with Vite]
+    end
 
-        subgraph Release[Release and Deploy]
-                F[Deploy frontend to S3]
-                G[Invalidate CloudFront cache]
-                H[Deploy backend to EC2]
-                I[Reload PM2 with zero downtime]
-                F --> G --> H --> I
-        end
+    subgraph Release[Release and Deploy]
+        F[Deploy frontend to S3] --> G[Invalidate CloudFront cache] --> H[Deploy backend to EC2] --> I[Reload PM2 with zero downtime]
+    end
 
-        E --> F
+    E --> F
 ```
 
 ### System Topology
@@ -230,21 +205,16 @@ This layout keeps the user-facing surface fast while isolating background work a
 ## Journal Processing Flow
 
 ```mermaid
-flowchart TD
+flowchart LR
         subgraph WritePath[User and API Path]
-                A[User creates or updates journal entry] --> B[API validates request]
-                B --> C[Journal persisted in MongoDB]
-                C --> D[AI job enqueued to AWS SQS]
+                A[User creates or updates journal entry] --> B[API validates request] --> C[Journal persisted in MongoDB] --> D[AI job enqueued to AWS SQS]
         end
 
         subgraph AsyncPath[Worker Processing Path]
-                E[Worker consumes job asynchronously] --> F[AI sentiment, mood score, and summary generated]
-                F --> G[Journal updated with AI output]
-                G --> H[Analytics cache invalidated or refreshed]
+                E[Worker consumes job asynchronously] --> F[AI sentiment, mood score, and summary generated] --> G[Journal updated with AI output] --> H[Analytics cache invalidated or refreshed] --> I[Dashboard reads updated analytics]
         end
 
         D --> E
-        H --> I[Dashboard reads updated analytics]
 ```
 
 ## Technology Stack
@@ -419,21 +389,21 @@ Implemented GitHub Actions deployment flow for the `main` branch:
 
 ## Screenshots
 
-### Dashboard Screenshot
+### CloudWatch Screenshot
 
-> Placeholder: add a dashboard screenshot here to show the analytics surface and primary navigation.
+![Dashboard screenshot](https://res.cloudinary.com/lipika/image/upload/v1778596104/1774091985193_bueurk.jpg)
 
-### Analytics Screenshot
+### CloudFront Metrics Screenshot
 
-> Placeholder: add an analytics screenshot here to show mood trends, sentiment distribution, or tag insights.
+![CloudFront metrics screenshot](https://res.cloudinary.com/lipika/image/upload/v1778596269/1774091985356_i5zriw.jpg)
 
-### Journal Editor Screenshot
+### PM2 Status Screenshot
 
-> Placeholder: add a journal editor screenshot here to show the writing experience and entry workflow.
+![PM2 status screenshot](https://res.cloudinary.com/lipika/image/upload/v1778596334/1774091985150_h7xeb2.jpg)
 
-### Observability Screenshot
+### Load Test Result Screenshot
 
-> Placeholder: add a CloudWatch or PM2 observability screenshot here to show runtime visibility.
+![Load test result screenshot](https://res.cloudinary.com/lipika/image/upload/v1778597001/1774091985200_nlesu3.jpg)
 
 ### Suggested Screenshot Locations
 
