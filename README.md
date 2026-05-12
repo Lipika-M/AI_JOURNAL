@@ -405,13 +405,6 @@ Implemented GitHub Actions deployment flow for the `main` branch:
 
 ![Load test result screenshot](https://res.cloudinary.com/lipika/image/upload/v1778597001/1774091985200_nlesu3.jpg)
 
-### Suggested Screenshot Locations
-
-- Place the hero screenshot directly under the badges section if you want an immediate product impression.
-- Add a dashboard screenshot before the architecture section to show the analytics surface area.
-- Add a journal detail or AI insight screenshot near the journal processing flow to connect the UI to the system design.
-- Add a deployment or observability screenshot near the DevOps and Infrastructure section if you want to emphasize operational maturity.
-
 ## Installation
 
 ```bash
