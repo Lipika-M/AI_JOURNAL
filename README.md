@@ -6,7 +6,7 @@ Production-grade AI journaling platform with asynchronous AI processing, cloud d
 
 > Distributed journaling system designed for AI-assisted reflection, worker-based processing, and production-style operations.
 
-![Solace banner](https://res.cloudinary.com/lipika/image/upload/v1778598746/f992647c-70e2-4007-ab7c-1a60858e38ac_ey2mkf.png)
+ 
 
 ### Badges
 
