@@ -1,6 +1,7 @@
 <div align="center">
 
 # Solace
+learning its workflow
 
 Production-grade AI journaling platform with asynchronous AI processing, cloud deployment on AWS, Redis-backed analytics, and real-time operational visibility.
 
