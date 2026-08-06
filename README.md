@@ -1,6 +1,9 @@
 <div align="center">
 
 # Solace
+learning its workflow
+working to understanding git&github
+made mistakes but trying
 
 Production-grade AI journaling platform with asynchronous AI processing, cloud deployment on AWS, Redis-backed analytics, and real-time operational visibility.
 
